@@ -5,7 +5,7 @@ export function AppFooter() {
   return (
     <footer className="border-t border-[#0F172A]/20 bg-[#0F172A] text-white/90">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-4">
           <div>
             <p className="font-heading text-lg font-semibold text-[#06B6D4]">
               {BRAND.name}
@@ -13,7 +13,7 @@ export function AppFooter() {
             <p className="mt-2 text-sm text-white/70">{BRAND.slogan}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-[#22C55E]">Navigation</p>
+            <p className="text-sm font-medium text-[#22C55E]">Tool</p>
             <ul className="mt-3 space-y-2 text-sm text-white/70">
               <li>
                 <Link href="/wizard" className="hover:text-white">
@@ -21,8 +21,13 @@ export function AppFooter() {
                 </Link>
               </li>
               <li>
+                <Link href="/technologien" className="hover:text-white">
+                  Technologien entdecken
+                </Link>
+              </li>
+              <li>
                 <Link href="/dashboard" className="hover:text-white">
-                  Simulation & Report
+                  Ihr Energie-Konzept
                 </Link>
               </li>
               <li>
@@ -33,11 +38,25 @@ export function AppFooter() {
             </ul>
           </div>
           <div>
+            <p className="text-sm font-medium text-[#22C55E]">Beratung</p>
+            <ul className="mt-3 space-y-2 text-sm text-white/70">
+              <li>
+                <Link href="/kontakt" className="hover:text-white">
+                  Kontakt aufnehmen
+                </Link>
+              </li>
+              <li>
+                <Link href="/dashboard?demo=showcase" className="hover:text-white">
+                  Demo Wilhelmsburg
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
             <p className="text-sm font-medium text-[#22C55E]">Hinweis</p>
             <p className="mt-3 text-xs leading-relaxed text-white/60">
-              MVP-Demonstration für Konzeptstudien dezentraler Energieversorgung.
-              Berechnungen sind vereinfachte Modelle – keine verbindliche
-              Planungsgrundlage.
+              Konzeptstudien für dezentrale Energie – vereinfachte Modelle, keine
+              verbindliche Planungsgrundlage.
             </p>
           </div>
         </div>

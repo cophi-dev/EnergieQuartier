@@ -72,12 +72,21 @@ export function AppHeader() {
           </Button>
 
           {isLanding && (
-            <ButtonLink
-              href="/wizard"
-              className="hidden bg-[#06B6D4] text-[#0F172A] hover:bg-[#22C55E] hover:text-[#0F172A] sm:inline-flex"
-            >
-              Neues Projekt
-            </ButtonLink>
+            <>
+              <ButtonLink
+                href="/kontakt"
+                variant="outline"
+                className="hidden border-[#06B6D4] text-[#0F172A] sm:inline-flex dark:text-[#06B6D4]"
+              >
+                Kontakt
+              </ButtonLink>
+              <ButtonLink
+                href="/wizard"
+                className="hidden bg-[#06B6D4] text-[#0F172A] hover:bg-[#22C55E] hover:text-[#0F172A] sm:inline-flex"
+              >
+                Neues Projekt
+              </ButtonLink>
+            </>
           )}
 
           <Button

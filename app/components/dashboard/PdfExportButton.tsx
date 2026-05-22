@@ -51,7 +51,7 @@ export function PdfExportButton({
       ) : (
         <FileDown className="mr-2 h-4 w-4" />
       )}
-      PDF-Report herunterladen
+      PDF-Beratungsreport
     </Button>
   );
 

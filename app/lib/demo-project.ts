@@ -7,41 +7,45 @@ export const SHOWCASE_PROJECT_ID = "energiequartier-showcase";
 
 /** Kurzbeschreibung für UI-Banner */
 export const SHOWCASE_SUMMARY =
-  "12 WE · 850 m² · Baujahr 1998 · Kernsanierung 2022 · Hamburg-Hammerbrook";
+  "8 WE · 620 m² · Baujahr 1978 · Teilsaniert 2020 · Hamburg-Wilhelmsburg";
+
+/** Einzeiler für Buttons und Hero */
+export const SHOWCASE_SUMMARY_SHORT =
+  "MFH Wilhelmsburg – 8 Wohneinheiten, realistisches Hamburger Beispiel";
 
 /**
  * Kuratiertes Beispielprojekt für Demo und Erstkontakt.
- * Realistisches Mehrfamilienhaus in Hamburg mit vollsaniertem Gebäudehülle (2022).
+ * Mehrfamilienhaus in Hamburg-Wilhelmsburg – typisch für Bestand + Wärmewende.
  */
 export function createShowcaseProject(): ProjectData {
   const now = new Date().toISOString();
   return {
     id: SHOWCASE_PROJECT_ID,
-    name: "MFH Hammerbrook – Beispielprojekt",
-    address: "Beim Strohhause 12",
-    postalCode: "20097",
+    name: "MFH Wilhelmsburg – Demo-Projekt",
+    address: "Koopstraße 42, Wilhelmsburg",
+    postalCode: "21109",
     buildingType: "mehrfamilienhaus",
-    livingArea: 850,
-    usableArea: 180,
-    yearBuilt: 1998,
-    renovationStatus: "vollständig",
-    electricityKwh: 34_200,
-    heatKwh: 58_500,
-    priorities: { cost: 30, co2: 45, autarky: 25 },
+    livingArea: 620,
+    usableArea: 95,
+    yearBuilt: 1978,
+    renovationStatus: "teilweise",
+    electricityKwh: 28_400,
+    heatKwh: 52_800,
+    priorities: { cost: 35, co2: 40, autarky: 25 },
     technologies: {
       pv: true,
       heatPumpAir: true,
       heatPumpGround: false,
       battery: true,
-      solarThermal: true,
+      solarThermal: false,
     },
-    budget: 420_000,
-    targetPaybackYears: 16,
+    budget: 285_000,
+    targetPaybackYears: 14,
     notes:
-      "Beispielprojekt: 12 Wohneinheiten, 850 m² Wohnfläche, Baujahr 1998, " +
-      "Kernsanierung 2022 (Fassade, Fenster, Heizungsvorbereitung). PV auf Flachdach, " +
-      "Luft-WP im Technikraum, Batteriespeicher + Solarthermie für WW. " +
-      "Schwerpunkt CO₂-Reduktion im Rahmen der Wärmewende.",
+      "Demo-Projekt: 8 Wohneinheiten in Wilhelmsburg (21109), Baujahr 1978, " +
+      "Teilsanierung 2020 (Fassade, Fenster). Gasheizung soll ersetzt werden. " +
+      "Flachdach für PV geeignet, Luft-Wärmepumpe im Keller, Batteriespeicher " +
+      "für Mieterstrom-Modell in Planung. Typisches Objekt der Hamburger Wärmewende.",
     createdAt: now,
     updatedAt: now,
   };

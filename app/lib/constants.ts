@@ -30,6 +30,7 @@ export const NAV_ITEMS = [
   { id: "wizard", label: "Konfigurator", href: "/wizard" },
   { id: "technologien", label: "Technologien entdecken", href: "/technologien" },
   { id: "projekte", label: "Meine Projekte", href: "/projekte" },
+  { id: "kontakt", label: "Kontakt", href: "/kontakt" },
 ] as const;
 
 export const WIZARD_STEPS = [

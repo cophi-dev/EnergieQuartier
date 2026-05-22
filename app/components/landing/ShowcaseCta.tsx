@@ -23,7 +23,7 @@ export function ShowcaseCta() {
         }}
       >
         <Play className="mr-2 h-4 w-4 fill-current" />
-        Demo Projekt laden
+        Demo Wilhelmsburg laden
       </Button>
     </motion.div>
   );

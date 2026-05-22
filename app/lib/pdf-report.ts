@@ -2,26 +2,89 @@ import type { jsPDF } from "jspdf";
 import type { CalculationResult } from "@/app/types/calculation";
 import type { ProjectData } from "@/app/types/project";
 import { BRAND } from "@/app/lib/constants";
+import { buildCustomerInsights } from "@/app/lib/customer-insights";
+import {
+  buildScenarioComparison,
+  formatScenarioTechLabels,
+} from "@/app/lib/scenarios";
+import {
+  CYAN,
+  drawCalloutBox,
+  drawCashflowChart,
+  drawChartFrame,
+  drawCo2Chart,
+  drawCostComparisonChart,
+  drawCoverHero,
+  drawEconomicsTiles,
+  drawEnergyFlowBars,
+  drawInvestmentWaterfall,
+  drawMetricHighlights,
+  drawNumberedSteps,
+  drawScenarioComparisonTable,
+  GREEN,
+  NAVY,
+  SLATE,
+  type ChartBox,
+} from "@/app/lib/pdf-charts";
 
-const MARGIN = 20;
+const MARGIN = 18;
 const PAGE_WIDTH = 210;
 const CONTENT_WIDTH = PAGE_WIDTH - MARGIN * 2;
-
-/** RGB aus Hex (#0F172A → [15, 23, 42]) */
-function hexRgb(hex: string): [number, number, number] {
-  const h = hex.replace("#", "");
-  return [
-    parseInt(h.slice(0, 2), 16),
-    parseInt(h.slice(2, 4), 16),
-    parseInt(h.slice(4, 6), 16),
-  ];
-}
-
-const NAVY = hexRgb(BRAND.colors.primary);
-const CYAN = hexRgb(BRAND.colors.cyan);
-const GREEN = hexRgb(BRAND.colors.green);
+const FOOTER_Y = 287;
 
 type PdfDoc = jsPDF;
+
+const BUILDING_LABELS: Record<ProjectData["buildingType"], string> = {
+  einfamilienhaus: "Einfamilienhaus",
+  mehrfamilienhaus: "Mehrfamilienhaus",
+  gewerbe: "Gewerbegebäude",
+  öffentlich: "Öffentliches Gebäude",
+};
+
+function addPageHeader(doc: PdfDoc, projectName: string): void {
+  doc.setFillColor(...NAVY);
+  doc.rect(0, 0, PAGE_WIDTH, 14, "F");
+  doc.setFillColor(...CYAN);
+  doc.rect(0, 14, PAGE_WIDTH, 0.8, "F");
+  doc.setTextColor(...CYAN);
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "bold");
+  doc.text(BRAND.name, MARGIN, 9);
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica", "normal");
+  doc.text(projectName.slice(0, 48), PAGE_WIDTH - MARGIN, 9, { align: "right" });
+}
+
+function addPageFooter(doc: PdfDoc): void {
+  const dateStr = new Date().toLocaleDateString("de-DE");
+  doc.setFontSize(7);
+  doc.setTextColor(...CYAN);
+  doc.text(
+    `${BRAND.name} · Energie-Konzeptstudie · ${dateStr} · Seite ${doc.getNumberOfPages()}`,
+    PAGE_WIDTH / 2,
+    FOOTER_Y,
+    { align: "center" },
+  );
+}
+
+function newPage(doc: PdfDoc, projectName: string): number {
+  doc.addPage();
+  addPageHeader(doc, projectName);
+  addPageFooter(doc);
+  return 22;
+}
+
+function ensureSpace(
+  doc: PdfDoc,
+  y: number,
+  needed: number,
+  projectName: string,
+): number {
+  if (y + needed > FOOTER_Y - 8) {
+    return newPage(doc, projectName);
+  }
+  return y;
+}
 
 function addSectionTitle(doc: PdfDoc, y: number, title: string): number {
   doc.setFontSize(12);
@@ -52,33 +115,12 @@ function addBodyText(
   return cursor + 4;
 }
 
-function ensureSpace(doc: PdfDoc, y: number, needed: number): number {
-  if (y + needed > 275) {
-    doc.addPage();
-    addPageFooter(doc);
-    return MARGIN + 10;
-  }
-  return y;
-}
-
-function addPageFooter(doc: PdfDoc): void {
-  const dateStr = new Date().toLocaleDateString("de-DE");
-  doc.setFontSize(7);
-  doc.setTextColor(...CYAN);
-  doc.text(
-    `${BRAND.name} · ${dateStr} · Seite ${doc.getNumberOfPages()}`,
-    PAGE_WIDTH / 2,
-    287,
-    { align: "center" },
-  );
-}
-
 function addKpiBox(doc: PdfDoc, y: number, result: CalculationResult): number {
-  const boxH = 22;
+  const boxH = 24;
   doc.setFillColor(...NAVY);
   doc.roundedRect(MARGIN, y, CONTENT_WIDTH, boxH, 2, 2, "F");
   doc.setDrawColor(...CYAN);
-  doc.setLineWidth(0.3);
+  doc.setLineWidth(0.4);
   doc.line(MARGIN, y, MARGIN + CONTENT_WIDTH, y);
 
   const kpis = [
@@ -104,10 +146,45 @@ function addKpiBox(doc: PdfDoc, y: number, result: CalculationResult): number {
     doc.setFontSize(11);
     doc.setTextColor(...(i % 2 === 0 ? CYAN : GREEN));
     doc.setFont("helvetica", "bold");
-    doc.text(kpi.value, x, y + 16, { align: "center" });
+    doc.text(kpi.value, x, y + 17, { align: "center" });
   });
 
   return y + boxH + 8;
+}
+
+function drawChartSection(
+  doc: PdfDoc,
+  y: number,
+  title: string,
+  subtitle: string,
+  height: number,
+  draw: (box: ChartBox) => void,
+): number {
+  const box: ChartBox = {
+    x: MARGIN,
+    y,
+    width: CONTENT_WIDTH,
+    height,
+  };
+  drawChartFrame(doc, box, title, subtitle);
+  draw(box);
+  return y + height + 6;
+}
+
+/** Szenario-Zeilen für PDF-Tabelle */
+export function mapScenariosForPdf(
+  scenarios: ReturnType<typeof buildScenarioComparison>,
+) {
+  return scenarios.map((s) => ({
+    name: s.name,
+    isCurrent: s.isCurrent,
+    isRecommended: s.isRecommended,
+    investNet: s.result.investment.net,
+    savings: s.result.economics.annualSavingsEur,
+    payback: s.result.economics.paybackYears,
+    co2: s.result.environment.co2SavingsKg / 1000,
+    autarky: s.result.annual.autarkyPercent,
+  }));
 }
 
 /** Erzeugt den Konzeptstudien-PDF-Report und startet den Download */
@@ -122,45 +199,52 @@ export async function downloadPdfReport(
     month: "2-digit",
     year: "numeric",
   });
+  const projectLabel = project.name.trim() || "Konzeptstudie";
+  const insights = buildCustomerInsights(project, result);
+  const scenarios = buildScenarioComparison(project);
+  const techSummary = formatScenarioTechLabels(project.technologies);
+  const addressLine = `${project.address}, ${project.postalCode} Hamburg`;
 
-  // Kopfzeile
-  doc.setFillColor(...NAVY);
-  doc.rect(0, 0, PAGE_WIDTH, 32, "F");
-  doc.setFillColor(...CYAN);
-  doc.rect(0, 32, PAGE_WIDTH, 1.2, "F");
-  doc.setFillColor(...GREEN);
-  doc.rect(0, 33.2, PAGE_WIDTH, 0.6, "F");
-
-  doc.setTextColor(...CYAN);
-  doc.setFontSize(20);
-  doc.setFont("helvetica", "bold");
-  doc.text(BRAND.name, MARGIN, 15);
-  doc.setFontSize(9);
-  doc.setTextColor(255, 255, 255);
-  doc.setFont("helvetica", "normal");
-  doc.text(BRAND.slogan, MARGIN, 22);
-  doc.setTextColor(...GREEN);
-  doc.setFontSize(8);
-  doc.text(`${BRAND.name} · Konzeptstudie`, MARGIN, 28);
-  doc.setTextColor(255, 255, 255);
-  doc.text(`Erstellt am ${dateStr}`, PAGE_WIDTH - MARGIN, 28, { align: "right" });
-
-  let y = 44;
-
+  // —— Titelseite ——
+  let y = drawCoverHero(
+    doc,
+    MARGIN,
+    PAGE_WIDTH,
+    projectLabel,
+    addressLine,
+    dateStr,
+    techSummary,
+  );
   y = addKpiBox(doc, y, result);
 
-  y = addSectionTitle(doc, y, "1. Zusammenfassung");
+  y = addSectionTitle(doc, y, "Auf einen Blick");
   y = addBodyText(doc, y, [
-    `Projekt: ${project.name}`,
-    `Objekt: ${project.address}, ${project.postalCode} Hamburg`,
-    `Gebäudetyp: ${project.buildingType} · ${project.livingArea} m² Wohnfläche · Baujahr ${project.yearBuilt}`,
-    `Sanierungsstand: ${project.renovationStatus}`,
-    `Stromverbrauch: ${project.electricityKwh.toLocaleString("de-DE")} kWh/a`,
-    `Wärmeverbrauch: ${project.heatKwh.toLocaleString("de-DE")} kWh/a`,
+    `${BUILDING_LABELS[project.buildingType]} · ${project.livingArea} m² · Baujahr ${project.yearBuilt}`,
+    `Sanierungsstand: ${project.renovationStatus} · Technologie-Mix: ${techSummary}`,
+    `Strombedarf: ${project.electricityKwh.toLocaleString("de-DE")} kWh/a · Wärmebedarf: ${project.heatKwh.toLocaleString("de-DE")} kWh/a`,
+    `Budget-Rahmen: ${project.budget.toLocaleString("de-DE")} € · Amortisationsziel: ${project.targetPaybackYears} Jahre`,
   ]);
 
-  y = ensureSpace(doc, y, 40);
-  y = addSectionTitle(doc, y, "2. Technologie-Konzept");
+  addPageFooter(doc);
+
+  // —— Ihre empfohlene Lösung ——
+  y = newPage(doc, projectLabel);
+  y = addSectionTitle(doc, y, insights.solutionHeadline);
+  y = addBodyText(doc, y, insights.solutionParagraphs);
+  y = drawCalloutBox(
+    doc,
+    MARGIN,
+    y,
+    CONTENT_WIDTH,
+    "Was bedeutet das für mich?",
+    "Diese Konzeptstudie gibt Ihnen eine verständliche Erstorientierung – ohne Fachjargon. " +
+      "Nutzen Sie die Zahlen für Gespräche mit Berater, Verwaltung oder Eigentümergemeinschaft. " +
+      "Für die Ausführungsplanung sind Vor-Ort-Termine und Detailplanung erforderlich.",
+    GREEN,
+  );
+
+  y = ensureSpace(doc, y, 35, projectLabel);
+  y = addSectionTitle(doc, y, "Technologie-Konzept im Detail");
   const techLines = result.technologyDetails.map(
     (t) => `• ${t.name}: ${t.headline}`,
   );
@@ -169,47 +253,128 @@ export async function downloadPdfReport(
   }
   y = addBodyText(doc, y, techLines);
 
-  y = ensureSpace(doc, y, 50);
-  y = addSectionTitle(doc, y, "3. Wirtschaftlichkeit");
-  y = addBodyText(doc, y, [
-    `Investition brutto: ${result.investment.gross.toLocaleString("de-DE")} €`,
-    `Förderung (BAFA/KfW, vereinfacht): ${result.investment.subsidies.toLocaleString("de-DE")} €`,
-    `Investition netto: ${result.investment.net.toLocaleString("de-DE")} €`,
-    `Baseline Energiekosten: ${result.economics.baselineCostEur.toLocaleString("de-DE")} €/a`,
-    `Jährliche Einsparung: ${result.economics.annualSavingsEur.toLocaleString("de-DE")} €/a`,
-    `Amortisation: ${result.economics.paybackYears} Jahre (Ziel: ${project.targetPaybackYears} J.)`,
-    `NPV (20 J., 4 %): ${result.economics.npvEur.toLocaleString("de-DE")} €`,
-    `ROI (20 J.): ${result.economics.roiPercent} %`,
-    `Budget Kunde: ${project.budget.toLocaleString("de-DE")} €`,
-  ]);
-
-  y = ensureSpace(doc, y, 35);
-  y = addSectionTitle(doc, y, "4. CO₂-Bilanz");
-  y = addBodyText(doc, y, [
-    `Ausgangslage: ${(result.environment.co2BaselineKg / 1000).toFixed(2)} t CO₂/a`,
-    `Nach Maßnahmen: ${(result.environment.co2AfterKg / 1000).toFixed(2)} t CO₂/a`,
-    `Einsparung: ${(result.environment.co2SavingsKg / 1000).toFixed(2)} t CO₂/a`,
-    `Autarkiegrad: ${result.annual.autarkyPercent} %`,
-    `PV-Eigenverbrauch: ${result.annual.selfConsumptionKwh.toLocaleString("de-DE")} kWh/a`,
-  ]);
-
   if (project.notes.trim()) {
-    y = ensureSpace(doc, y, 25);
-    y = addSectionTitle(doc, y, "Anmerkungen");
-    y = addBodyText(doc, y, [project.notes]);
+    y = ensureSpace(doc, y, 18, projectLabel);
+    doc.setFontSize(9);
+    doc.setTextColor(...SLATE);
+    doc.setFont("helvetica", "italic");
+    const noteWrapped = doc.splitTextToSize(
+      `Projektnotiz: ${project.notes}`,
+      CONTENT_WIDTH,
+    ) as string[];
+    doc.text(noteWrapped, MARGIN, y);
+    y += noteWrapped.length * 4 + 6;
   }
 
-  y = ensureSpace(doc, y, 40);
-  y = addSectionTitle(doc, y, "5. Hinweis / Disclaimer");
+  // —— Was kostet Sie das? ——
+  y = newPage(doc, projectLabel);
+  y = addSectionTitle(doc, y, insights.costHeadline);
+  y = drawMetricHighlights(doc, MARGIN, y, CONTENT_WIDTH, insights.costHighlights);
+  y = addBodyText(doc, y, insights.costParagraphs);
+
+  y = ensureSpace(doc, y, 38, projectLabel);
+  y = drawInvestmentWaterfall(doc, MARGIN, y, CONTENT_WIDTH, result);
+  y += 2;
+
+  y = ensureSpace(doc, y, 44, projectLabel);
+  y = drawEconomicsTiles(
+    doc,
+    MARGIN,
+    y,
+    CONTENT_WIDTH,
+    result,
+    project.targetPaybackYears,
+  );
+
+  // —— CO₂ ——
+  y = ensureSpace(doc, y, 70, projectLabel);
+  y = addSectionTitle(doc, y, insights.co2Headline);
+  y = drawMetricHighlights(doc, MARGIN, y, CONTENT_WIDTH, insights.co2Highlights);
+  y = addBodyText(doc, y, insights.co2Paragraphs);
+
+  y = ensureSpace(doc, y, 58, projectLabel);
+  y = drawChartSection(
+    doc,
+    y,
+    "CO₂-Emissionen im Vergleich",
+    "Ausgangslage vs. Szenario nach Maßnahmen",
+    52,
+    (box) => drawCo2Chart(doc, box, result.environment),
+  );
+
+  // —— Szenario-Vergleich ——
+  y = newPage(doc, projectLabel);
+  y = addSectionTitle(doc, y, "Szenario-Vergleich");
+  y = addBodyText(doc, y, [
+    "Drei Varianten für Ihr Objekt – vergleichen Sie Investition, Einsparung und Klimawirkung.",
+    "Das markierte Szenario entspricht Ihrer aktuellen Konfiguration im Konfigurator.",
+  ]);
+  y = drawScenarioComparisonTable(
+    doc,
+    MARGIN,
+    y,
+    CONTENT_WIDTH,
+    mapScenariosForPdf(scenarios),
+  );
+
+  // —— Energiefluss & Charts ——
+  y = newPage(doc, projectLabel);
+  y = addSectionTitle(doc, y, "Energiefluss & Wirtschaftlichkeit");
+  y = drawChartSection(
+    doc,
+    y,
+    "Wichtigste Energieflüsse",
+    "kWh/a · Strom / Wärme / Kälte (vereinfacht aus Sankey)",
+    68,
+    (box) => drawEnergyFlowBars(doc, box, result.sankey),
+  );
+
+  y = ensureSpace(doc, y, 40, projectLabel);
+  y = addBodyText(doc, y, [
+    `PV-Erzeugung: ${result.annual.pvGenerationKwh.toLocaleString("de-DE")} kWh/a`,
+    `Eigenverbrauch: ${result.annual.selfConsumptionKwh.toLocaleString("de-DE")} kWh/a · Autarkie ${result.annual.autarkyPercent} %`,
+    `Netzbezug: ${result.annual.gridImportKwh.toLocaleString("de-DE")} kWh/a · Einspeisung: ${result.annual.gridExportKwh.toLocaleString("de-DE")} kWh/a`,
+  ]);
+
+  y = ensureSpace(doc, y, 58, projectLabel);
+  y = drawChartSection(
+    doc,
+    y,
+    "Kumulierter Cashflow (20 Jahre)",
+    "Break-even bei Überschreitung der Null-Linie",
+    54,
+    (box) => drawCashflowChart(doc, box, result.cashflowYears),
+  );
+
+  y = ensureSpace(doc, y, 54, projectLabel);
+  y = drawChartSection(
+    doc,
+    y,
+    "Investition vs. Einsparung",
+    "Netto-Investition gegen kumulierte Einsparung über 20 Jahre",
+    50,
+    (box) => drawCostComparisonChart(doc, box, result),
+  );
+
+  // —— Nächste Schritte & Disclaimer ——
+  y = newPage(doc, projectLabel);
+  y = addSectionTitle(doc, y, "Nächste Schritte");
+  y = addBodyText(doc, y, [
+    "So geht es nach dieser Erststudie sinnvoll weiter:",
+  ]);
+  y = drawNumberedSteps(doc, MARGIN, y, CONTENT_WIDTH, insights.nextSteps);
+
+  y = ensureSpace(doc, y, 40, projectLabel);
+  y = addSectionTitle(doc, y, "Hinweis / Disclaimer");
   doc.setFontSize(8);
-  doc.setTextColor(100, 116, 139);
+  doc.setTextColor(...SLATE);
+  doc.setFont("helvetica", "normal");
   const disclaimer = [
-    `Diese Konzeptstudie wurde mit ${BRAND.name} erstellt und dient als vereinfachte`,
-    "Entscheidungsgrundlage im Vertriebsgespräch. Die Berechnungen basieren auf",
-    "typisierten Annahmen (Erträge Hamburg, BAFA-Fördersätze 2026, Energiepreise",
-    "Strom/Gas/Einspeisung) und ersetzen keine detaillierte Fachplanung, Lastgang-",
-    "analyse oder verbindliche Förderzusage. Für die Ausführungsplanung sind",
-    "Hausbesuche, hydraulische Abstimmung und behördliche Prüfungen erforderlich.",
+    `Diese Energie-Konzeptstudie wurde mit ${BRAND.name} erstellt und dient als vereinfachte`,
+    "Entscheidungsgrundlage – verständlich aufbereitet für Eigentümer, Verwaltungen und",
+    "Projektentwickler. Die Berechnungen basieren auf typisierten Annahmen (Erträge Hamburg,",
+    "BAFA-Fördersätze 2026, Energiepreise Strom/Gas/Einspeisung) und ersetzen keine",
+    "detaillierte Fachplanung, Lastganganalyse oder verbindliche Förderzusage.",
     BRAND.pdf.footerNote,
   ];
   const discWrapped = doc.splitTextToSize(
@@ -218,9 +383,7 @@ export async function downloadPdfReport(
   ) as string[];
   doc.text(discWrapped, MARGIN, y);
 
-  addPageFooter(doc);
-
-  const safeName = project.name
+  const safeName = projectLabel
     .replace(/[^a-zA-Z0-9äöüÄÖÜß\-_ ]/g, "")
     .trim()
     .slice(0, 40) || "Konzeptstudie";

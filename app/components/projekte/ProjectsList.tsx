@@ -130,7 +130,7 @@ export function ProjectsList() {
             }}
             className="border-[#06B6D4] text-[#0F172A] dark:text-[#06B6D4]"
           >
-            Demo Projekt laden
+            Demo Wilhelmsburg laden
           </Button>
           <Button
             onClick={handleNewProject}

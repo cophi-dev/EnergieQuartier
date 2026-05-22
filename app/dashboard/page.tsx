@@ -3,8 +3,9 @@ import { DashboardView } from "@/app/components/dashboard/DashboardView";
 import { DashboardSkeleton } from "@/app/components/dashboard/DashboardSkeleton";
 
 export const metadata = {
-  title: "Simulation & Report | EnergieQuartier",
-  description: "Ergebnis-Dashboard mit Sankey, KPIs und Wirtschaftlichkeit",
+  title: "Ihr Energie-Konzept | EnergieQuartier",
+  description:
+    "Ergebnis-Report mit Szenario-Vergleich, Kosten, CO₂ und nächsten Schritten – verständlich für Entscheider.",
 };
 
 export default function DashboardPage() {

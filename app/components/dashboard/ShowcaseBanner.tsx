@@ -15,7 +15,7 @@ export function ShowcaseBanner() {
           <div>
             <p className="font-semibold">Beispielprojekt aktiv</p>
             <p className="mt-0.5 text-sm text-white/75">
-              {SHOWCASE_SUMMARY} · PV + Luft-WP + Speicher + Solarthermie
+              {SHOWCASE_SUMMARY} · PV + Luft-WP + Speicher
             </p>
           </div>
         </div>

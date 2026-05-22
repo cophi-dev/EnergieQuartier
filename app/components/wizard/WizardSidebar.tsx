@@ -86,7 +86,7 @@ export function WizardSidebar({
             className="w-full border-[#06B6D4] text-[#0F172A] hover:bg-[#06B6D4]/10 dark:text-[#06B6D4]"
           >
             <Play className="mr-2 h-4 w-4 fill-current" />
-            Demo Projekt laden
+            Demo Wilhelmsburg laden
           </Button>
         )}
         <div className="h-1.5 overflow-hidden rounded-full bg-[#0F172A]/10">

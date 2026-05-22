@@ -11,12 +11,20 @@ import { DashboardProjectSidebar } from "@/app/components/dashboard/DashboardPro
 import { DashboardSkeleton } from "@/app/components/dashboard/DashboardSkeleton";
 import { ShowcaseBanner } from "@/app/components/dashboard/ShowcaseBanner";
 import { KpiCards } from "@/app/components/dashboard/KpiCards";
-import { EnergySankey } from "@/app/components/dashboard/EnergySankey";
+import { EnergyFlowSection } from "@/app/components/dashboard/EnergyFlowSection";
+import { QuartierComingSoon } from "@/app/components/dashboard/QuartierComingSoon";
 import { CashflowChart } from "@/app/components/dashboard/CashflowChart";
 import { CostComparisonChart } from "@/app/components/dashboard/CostComparisonChart";
 import { TechnologyCards } from "@/app/components/dashboard/TechnologyCards";
 import { SpeicherpilotDialog } from "@/app/components/dashboard/SpeicherpilotDialog";
+import { CustomerResultSummary } from "@/app/components/dashboard/CustomerResultSummary";
+import { CustomerCostSection } from "@/app/components/dashboard/CustomerCostSection";
+import { CustomerCo2Section } from "@/app/components/dashboard/CustomerCo2Section";
+import { ScenarioComparison } from "@/app/components/dashboard/ScenarioComparison";
+import { NextStepsSection } from "@/app/components/dashboard/NextStepsSection";
 import { calculateProject } from "@/app/lib/calculations";
+import { buildCustomerInsights } from "@/app/lib/customer-insights";
+import { buildScenarioComparison } from "@/app/lib/scenarios";
 import {
   createShowcaseProject,
   SHOWCASE_PROJECT_ID,
@@ -56,9 +64,19 @@ export function DashboardView() {
     return calculateProject(activeProject);
   }, [hydrated, activeProject]);
 
+  const insights = useMemo(() => {
+    if (!result) return null;
+    return buildCustomerInsights(activeProject, result);
+  }, [activeProject, result]);
+
+  const scenarios = useMemo(() => {
+    if (!hydrated) return [];
+    return buildScenarioComparison(activeProject);
+  }, [hydrated, activeProject]);
+
   const canExportPdf = hasUserProject || isShowcase;
 
-  if (!hydrated || !result) {
+  if (!hydrated || !result || !insights) {
     return <DashboardSkeleton />;
   }
 
@@ -81,7 +99,7 @@ export function DashboardView() {
                 className="font-semibold text-[#22C55E] underline"
                 onClick={() => loadShowcaseProject()}
               >
-                Demo Projekt laden
+                Demo Wilhelmsburg laden
               </button>
             </div>
           )}
@@ -93,10 +111,10 @@ export function DashboardView() {
                 animate={{ opacity: 1, y: 0 }}
                 className="font-heading text-2xl font-bold text-[#0F172A] dark:text-white"
               >
-                Simulation & Report
+                Ihr Energie-Konzept
               </motion.h1>
               <p className="text-sm text-[#0F172A]/55 dark:text-white/60">
-                Energiefluss · Wirtschaftlichkeit · CO₂-Bilanz
+                {activeProject.name || "Konzeptstudie"} · verständlich erklärt
               </p>
             </div>
             <div id="report" className="flex flex-wrap gap-2 scroll-mt-24">
@@ -113,19 +131,18 @@ export function DashboardView() {
             </div>
           </div>
 
-          <Card className="glass-card border-[#0F172A]/8">
-            <CardHeader>
-              <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-[#0F172A] dark:text-white">
-                Energiefluss (Sankey)
-                <span className="text-xs font-normal text-[#06B6D4]">
-                  kWh/a · Strom / Wärme / Kälte
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <EnergySankey data={result.sankey} />
-            </CardContent>
-          </Card>
+          <CustomerResultSummary insights={insights} />
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            <CustomerCostSection insights={insights} />
+            <CustomerCo2Section insights={insights} />
+          </div>
+
+          <ScenarioComparison scenarios={scenarios} />
+
+          <QuartierComingSoon />
+
+          <EnergyFlowSection project={activeProject} result={result} />
 
           <div className="grid gap-6 lg:grid-cols-2">
             <Card className="glass-card border-[#0F172A]/8">
@@ -153,10 +170,12 @@ export function DashboardView() {
 
           <div>
             <h2 className="mb-4 text-lg font-semibold text-[#0F172A] dark:text-white">
-              Technologie-Details
+              Ihre Technologien im Detail
             </h2>
             <TechnologyCards details={result.technologyDetails} />
           </div>
+
+          <NextStepsSection insights={insights} />
 
           <div className="xl:hidden">
             <h2 className="mb-4 text-lg font-semibold text-[#0F172A]">KPIs</h2>
@@ -188,7 +207,7 @@ export function DashboardView() {
                 variant="outline"
                 className="w-full border-[#06B6D4] text-[#0F172A] dark:text-[#06B6D4]"
               >
-                Demo Projekt laden
+                Demo Wilhelmsburg laden
               </ButtonLink>
             )}
           </div>
