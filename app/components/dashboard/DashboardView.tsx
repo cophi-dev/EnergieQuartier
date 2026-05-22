@@ -131,11 +131,19 @@ export function DashboardView() {
             </div>
           </div>
 
-          <CustomerResultSummary insights={insights} />
+          <CustomerResultSummary
+            project={activeProject}
+            result={result}
+            insights={insights}
+          />
 
           <div className="grid gap-6 lg:grid-cols-2">
             <CustomerCostSection insights={insights} />
-            <CustomerCo2Section insights={insights} />
+            <CustomerCo2Section
+              project={activeProject}
+              result={result}
+              insights={insights}
+            />
           </div>
 
           <ScenarioComparison scenarios={scenarios} />
@@ -172,10 +180,14 @@ export function DashboardView() {
             <h2 className="mb-4 text-lg font-semibold text-[#0F172A] dark:text-white">
               Ihre Technologien im Detail
             </h2>
-            <TechnologyCards details={result.technologyDetails} />
+            <TechnologyCards
+              project={activeProject}
+              result={result}
+              details={result.technologyDetails}
+            />
           </div>
 
-          <NextStepsSection insights={insights} />
+          <NextStepsSection project={activeProject} result={result} />
 
           <div className="xl:hidden">
             <h2 className="mb-4 text-lg font-semibold text-[#0F172A]">KPIs</h2>

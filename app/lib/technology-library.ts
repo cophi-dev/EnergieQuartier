@@ -157,7 +157,7 @@ export const TECHNOLOGY_LIBRARY: TechnologyLibraryEntry[] = [
       hint: "Abhängig von Soletemperatur und Wärmenetz",
     },
     bestFor: [
-      "Quartiersentwicklung mit HEW-Wärmeinfrastruktur",
+      "Quartiersentwicklung mit städtischer Wärmeinfrastruktur",
       "Große Wärmenetze und industrielle Grundlast",
       "Langfristige kommunale Energieplanung",
     ],
@@ -347,7 +347,7 @@ export const TECHNOLOGY_LIBRARY: TechnologyLibraryEntry[] = [
       "Skaleneffekte bei Erzeugung und Wartung",
       "Flexible Wärmequellen kombinierbar",
       "Ideal für Quartiersentwicklung",
-      "Anschluss an HEW-Infrastruktur möglich",
+      "Anschluss an kommunale Wärmenetze möglich",
     ],
     disadvantages: [
       "Hoher Planungs- und Koordinationsaufwand",

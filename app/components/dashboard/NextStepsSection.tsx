@@ -1,16 +1,43 @@
 "use client";
 
+import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, ListChecks } from "lucide-react";
+import { ArrowRight, ListChecks, Loader2, RotateCw } from "lucide-react";
 import { ButtonLink } from "@/app/components/ui/ButtonLink";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useAdvisorText } from "@/app/hooks/useAdvisorText";
+import { buildAdvisorCacheKey } from "@/app/lib/llm/cache-key";
+import { buildAdvisorContext } from "@/app/lib/llm/context";
+import { parseNextStepsText } from "@/app/lib/llm/parse-next-steps";
+import type { CalculationResult } from "@/app/types/calculation";
+import type { ProjectData } from "@/app/types/project";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { CustomerInsights } from "@/app/lib/customer-insights";
 
 interface NextStepsSectionProps {
-  insights: CustomerInsights;
+  project: ProjectData;
+  result: CalculationResult;
 }
 
-export function NextStepsSection({ insights }: NextStepsSectionProps) {
+export function NextStepsSection({ project, result }: NextStepsSectionProps) {
+  const context = useMemo(
+    () => buildAdvisorContext(project, result),
+    [project, result],
+  );
+  const cacheKey = buildAdvisorCacheKey("next-steps", context);
+  const { text, status, source, regenerate } = useAdvisorText({
+    slot: "next-steps",
+    cacheKey,
+    context,
+  });
+
+  const steps = useMemo(() => parseNextStepsText(text), [text]);
+  const loading = status === "loading" && source === null;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -19,32 +46,73 @@ export function NextStepsSection({ insights }: NextStepsSectionProps) {
     >
       <Card className="glass-card border-[#0F172A]/8">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg text-[#0F172A] dark:text-white">
-            <ListChecks className="h-5 w-5 text-[#06B6D4]" />
-            Nächste Schritte
-          </CardTitle>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-lg text-[#0F172A] dark:text-white">
+                <ListChecks className="h-5 w-5 text-[#06B6D4]" />
+                Nächste Schritte
+              </CardTitle>
+              <p className="mt-1 text-sm text-[#0F172A]/55 dark:text-white/55">
+                Konkrete Handlungsempfehlungen für Ihr Projekt
+              </p>
+            </div>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    className="h-7 w-7 text-[#0F172A]/35 hover:text-[#06B6D4] dark:text-white/35"
+                    onClick={regenerate}
+                    disabled={status === "loading"}
+                    aria-label="Schritte neu formulieren"
+                  />
+                }
+              >
+                {status === "loading" ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <RotateCw className="h-3.5 w-3.5" />
+                )}
+              </TooltipTrigger>
+              <TooltipContent>Schritte neu formulieren</TooltipContent>
+            </Tooltip>
+          </div>
         </CardHeader>
         <CardContent>
-          <ol className="grid gap-4 sm:grid-cols-2">
-            {insights.nextSteps.map((step, i) => (
-              <li
-                key={step.title}
-                className="flex gap-3 rounded-lg border border-[#0F172A]/6 p-4"
-              >
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#0F172A] text-xs font-bold text-white dark:bg-[#06B6D4] dark:text-[#0F172A]">
-                  {i + 1}
-                </span>
-                <div>
-                  <p className="font-medium text-[#0F172A] dark:text-white">
-                    {step.title}
-                  </p>
-                  <p className="mt-1 text-sm text-[#0F172A]/65 dark:text-white/65">
-                    {step.description}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
+          {loading ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              {[1, 2, 3, 4].map((n) => (
+                <div
+                  key={n}
+                  className="h-20 animate-pulse rounded-lg border border-[#0F172A]/6 bg-[#0F172A]/5 dark:bg-white/5"
+                />
+              ))}
+            </div>
+          ) : (
+            <ol className="grid gap-4 sm:grid-cols-2">
+              {steps.map((step, i) => (
+                <li
+                  key={`${step.title}-${i}`}
+                  className="flex gap-3 rounded-lg border border-[#0F172A]/6 p-4"
+                >
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#0F172A] text-xs font-bold text-white dark:bg-[#06B6D4] dark:text-[#0F172A]">
+                    {i + 1}
+                  </span>
+                  <div>
+                    <p className="font-medium text-[#0F172A] dark:text-white">
+                      {step.title}
+                    </p>
+                    <p className="mt-1 text-sm text-[#0F172A]/65 dark:text-white/65">
+                      {step.description}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          )}
+
           <div className="mt-6 flex flex-wrap gap-3">
             <ButtonLink
               href="/wizard"

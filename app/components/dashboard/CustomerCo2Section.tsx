@@ -1,15 +1,39 @@
 "use client";
 
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Leaf } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AdvisorTextBlock } from "@/app/components/dashboard/AdvisorTextBlock";
+import { useAdvisorText } from "@/app/hooks/useAdvisorText";
+import { buildAdvisorCacheKey } from "@/app/lib/llm/cache-key";
+import { buildAdvisorContext } from "@/app/lib/llm/context";
 import type { CustomerInsights } from "@/app/lib/customer-insights";
+import type { CalculationResult } from "@/app/types/calculation";
+import type { ProjectData } from "@/app/types/project";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface CustomerCo2SectionProps {
+  project: ProjectData;
+  result: CalculationResult;
   insights: CustomerInsights;
 }
 
-export function CustomerCo2Section({ insights }: CustomerCo2SectionProps) {
+export function CustomerCo2Section({
+  project,
+  result,
+  insights,
+}: CustomerCo2SectionProps) {
+  const context = useMemo(
+    () => buildAdvisorContext(project, result),
+    [project, result],
+  );
+  const cacheKey = buildAdvisorCacheKey("co2-comparison", context);
+  const { text, status, source, regenerate } = useAdvisorText({
+    slot: "co2-comparison",
+    cacheKey,
+    context,
+  });
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -42,14 +66,13 @@ export function CustomerCo2Section({ insights }: CustomerCo2SectionProps) {
               </div>
             ))}
           </div>
-          {insights.co2Paragraphs.map((p) => (
-            <p
-              key={p.slice(0, 40)}
-              className="text-sm leading-relaxed text-[#0F172A]/75 dark:text-white/75"
-            >
-              {p}
-            </p>
-          ))}
+
+          <AdvisorTextBlock
+            text={text}
+            status={status}
+            onRegenerate={regenerate}
+            isInitialLoad={status === "loading" && source === null}
+          />
         </CardContent>
       </Card>
     </motion.div>

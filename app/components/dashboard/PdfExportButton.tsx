@@ -9,6 +9,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { downloadPdfReport } from "@/app/lib/pdf-report";
+import { buildAdvisorContext } from "@/app/lib/llm/context";
+import { fetchAdvisorText } from "@/app/lib/llm/fetch-advisor-text";
 import type { CalculationResult } from "@/app/types/calculation";
 import type { ProjectData } from "@/app/types/project";
 
@@ -33,7 +35,12 @@ export function PdfExportButton({
     setLoading(true);
     try {
       onBeforeExport?.();
-      await downloadPdfReport(project, result);
+      const context = buildAdvisorContext(project, result);
+      const { text: executiveSummary } = await fetchAdvisorText(
+        "report-executive-summary",
+        context,
+      );
+      await downloadPdfReport(project, result, { executiveSummary });
     } finally {
       setLoading(false);
     }

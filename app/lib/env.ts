@@ -1,8 +1,6 @@
 /** Öffentliche App-Konfiguration (NEXT_PUBLIC_*) */
 
 const DEFAULT_SPEICHERPILOT_URL = "https://speicherpilot.example";
-const DEFAULT_HEW_CONTACT_URL =
-  "https://www.hamburger-energiewerke.de/de/kontakt/";
 
 /** URL der Speicherpilot-App – per .env.local überschreibbar */
 export function getSpeicherpilotUrl(): string {
@@ -16,14 +14,9 @@ export function isSpeicherpilotConfigured(): boolean {
   return Boolean(url && url.startsWith("http") && !url.includes("example"));
 }
 
-/** HEW-Kontaktseite – per NEXT_PUBLIC_HEW_CONTACT_URL überschreibbar */
-export function getHewContactUrl(): string {
-  const url = process.env.NEXT_PUBLIC_HEW_CONTACT_URL;
-  if (url && url.startsWith("http")) return url;
-  return DEFAULT_HEW_CONTACT_URL;
-}
-
-export function isHewContactConfigured(): boolean {
-  const url = process.env.NEXT_PUBLIC_HEW_CONTACT_URL;
-  return Boolean(url && url.startsWith("http"));
+/** Optionale Kontakt-E-Mail für mailto-Links (NEXT_PUBLIC_CONTACT_EMAIL) */
+export function getContactEmail(): string | null {
+  const email = process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim();
+  if (email && email.includes("@")) return email;
+  return null;
 }

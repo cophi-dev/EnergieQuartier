@@ -62,7 +62,7 @@ export function loadContactInquiries(): ContactInquiry[] {
 export function buildContactMailto(
   values: ContactFormValues,
   project?: { id: string; name: string },
-  hewEmail = "beratung@hew.de",
+  recipientEmail?: string | null,
 ): string {
   const subject = encodeURIComponent(
     `EnergieQuartier Anfrage${project?.name ? `: ${project.name}` : ""}`,
@@ -82,5 +82,8 @@ export function buildContactMailto(
       .filter(Boolean)
       .join("\n"),
   );
-  return `mailto:${hewEmail}?subject=${subject}&body=${body}`;
+  const to = recipientEmail ? encodeURIComponent(recipientEmail) : "";
+  return to
+    ? `mailto:${to}?subject=${subject}&body=${body}`
+    : `mailto:?subject=${subject}&body=${body}`;
 }

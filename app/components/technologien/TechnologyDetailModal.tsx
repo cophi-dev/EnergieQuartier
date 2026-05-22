@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -10,6 +12,8 @@ import {
   Target,
 } from "lucide-react";
 import type { TechnologyLibraryEntry } from "@/app/types/technology";
+import { TechnologyAdvisorNote } from "@/app/components/advisor/TechnologyAdvisorNote";
+import { calculateProject } from "@/app/lib/calculations";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -36,9 +40,18 @@ export function TechnologyDetailModal({
   onOpenChange,
 }: TechnologyDetailModalProps) {
   const router = useRouter();
+  const currentProject = useProjectStore((s) => s.currentProject);
   const startWizardWithTechnologies = useProjectStore(
     (s) => s.startWizardWithTechnologies,
   );
+
+  const hasPersonalizedContext = Boolean(
+    currentProject.name?.trim() && currentProject.postalCode?.trim(),
+  );
+  const projectResult = useMemo(() => {
+    if (!hasPersonalizedContext) return null;
+    return calculateProject(currentProject);
+  }, [hasPersonalizedContext, currentProject]);
 
   if (!technology) return null;
 
@@ -115,6 +128,26 @@ export function TechnologyDetailModal({
               </p>
             )}
           </section>
+
+          {hasPersonalizedContext && projectResult ? (
+            <TechnologyAdvisorNote
+              project={currentProject}
+              result={projectResult}
+              technologyId={technology.id}
+              technologyName={technology.name}
+            />
+          ) : (
+            <div className="rounded-xl border border-[#06B6D4]/20 bg-[#06B6D4]/5 p-4">
+              <p className="text-sm text-[#0F172A]/80 dark:text-white/80">
+                Legen Sie im{" "}
+                <Link href="/wizard" className="font-medium text-[#06B6D4] underline">
+                  Konfigurator
+                </Link>{" "}
+                ein Projekt an – dann erhalten Sie hier eine personalisierte
+                Einschätzung, ob {technology.name} zu Ihrem Objekt passt.
+              </p>
+            </div>
+          )}
 
           <div className="grid gap-6 sm:grid-cols-2">
             <section>

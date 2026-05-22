@@ -8,8 +8,10 @@ import {
   Thermometer,
   Wind,
 } from "lucide-react";
+import { TechnologyAdvisorNote } from "@/app/components/advisor/TechnologyAdvisorNote";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { TechnologyDetail } from "@/app/types/calculation";
+import type { CalculationResult, TechnologyDetail } from "@/app/types/calculation";
+import type { ProjectData } from "@/app/types/project";
 
 const ICONS: Record<string, typeof Sun> = {
   pv: Sun,
@@ -20,10 +22,12 @@ const ICONS: Record<string, typeof Sun> = {
 };
 
 interface TechnologyCardsProps {
+  project: ProjectData;
+  result: CalculationResult;
   details: TechnologyDetail[];
 }
 
-export function TechnologyCards({ details }: TechnologyCardsProps) {
+export function TechnologyCards({ project, result, details }: TechnologyCardsProps) {
   if (details.length === 0) {
     return (
       <p className="text-sm text-[#0F172A]/55">
@@ -56,7 +60,7 @@ export function TechnologyCards({ details }: TechnologyCardsProps) {
                   <p className="text-xs text-[#06B6D4]">{tech.headline}</p>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <dl className="space-y-1.5">
                   {tech.specs.map((spec) => (
                     <div
@@ -70,6 +74,13 @@ export function TechnologyCards({ details }: TechnologyCardsProps) {
                     </div>
                   ))}
                 </dl>
+                <TechnologyAdvisorNote
+                  project={project}
+                  result={result}
+                  technologyId={tech.id}
+                  technologyName={tech.name}
+                  compact
+                />
               </CardContent>
             </Card>
           </motion.div>

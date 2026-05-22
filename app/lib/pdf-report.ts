@@ -191,6 +191,7 @@ export function mapScenariosForPdf(
 export async function downloadPdfReport(
   project: ProjectData,
   result: CalculationResult,
+  options?: { executiveSummary?: string },
 ): Promise<void> {
   const { jsPDF } = await import("jspdf");
   const doc = new jsPDF({ unit: "mm", format: "a4" });
@@ -216,6 +217,12 @@ export async function downloadPdfReport(
     techSummary,
   );
   y = addKpiBox(doc, y, result);
+
+  const executiveSummary =
+    options?.executiveSummary?.trim() ||
+    insights.solutionParagraphs.slice(0, 2).join(" ");
+  y = addSectionTitle(doc, y, "Executive Summary");
+  y = addBodyText(doc, y, [executiveSummary]);
 
   y = addSectionTitle(doc, y, "Auf einen Blick");
   y = addBodyText(doc, y, [
