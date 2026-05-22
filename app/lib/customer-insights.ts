@@ -12,6 +12,8 @@ const BUILDING_LABELS: Record<ProjectData["buildingType"], string> = {
 
 export interface CustomerInsights {
   solutionHeadline: string;
+  /** Einzeiler für Hero-Bereich (statt langer Absätze oben) */
+  solutionTagline: string;
   solutionParagraphs: string[];
   costHeadline: string;
   costParagraphs: string[];
@@ -85,8 +87,11 @@ export function buildCustomerInsights(
     (result.economics.baselineCostEur - result.economics.annualSavingsEur) / 12,
   );
 
+  const solutionTagline = `${tech} · ${result.annual.autarkyPercent} % Autarkie · ${result.economics.paybackYears.toFixed(1)} J. Amortisation · ${result.investment.net.toLocaleString("de-DE")} € netto`;
+
   return {
     solutionHeadline: "Ihre empfohlene Lösung – einfach erklärt",
+    solutionTagline,
     solutionParagraphs,
     costHeadline: "Was kostet Sie das wirklich?",
     costParagraphs: [

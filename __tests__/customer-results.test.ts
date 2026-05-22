@@ -70,6 +70,7 @@ describe("buildCustomerInsights", () => {
     const insights = buildCustomerInsights(project, result);
 
     expect(insights.solutionHeadline).toContain("empfohlene Lösung");
+    expect(insights.solutionTagline.length).toBeGreaterThan(20);
     expect(insights.costHeadline).toContain("kostet");
     expect(insights.co2Headline).toContain("CO₂");
     expect(insights.solutionParagraphs.length).toBeGreaterThanOrEqual(2);

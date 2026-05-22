@@ -582,7 +582,8 @@ export function drawMetricHighlights(
     doc.setFontSize(10);
     doc.setTextColor(...NAVY);
     doc.setFont("helvetica", "bold");
-    doc.text(item.value, tx + 3, y + 13);
+    const valueLines = doc.splitTextToSize(item.value, tileW - 6) as string[];
+    doc.text(valueLines.slice(0, 2), tx + 3, y + 13);
 
     if (item.hint) {
       doc.setFontSize(6);
@@ -646,21 +647,27 @@ export function drawScenarioComparisonTable(
   scenarios.forEach((s, rowIdx) => {
     const bg: [number, number, number] =
       rowIdx % 2 === 0 ? LIGHT_BG : [255, 255, 255];
-    doc.setFillColor(...bg);
-    doc.rect(x, cy, width, rowH, "F");
 
     const tags: string[] = [];
     if (s.isCurrent) tags.push("Ihr Konzept");
     if (s.isRecommended) tags.push("Empfohlen");
     const nameLine = tags.length ? `${s.name} (${tags.join(", ")})` : s.name;
+    const nameWrapped = doc.splitTextToSize(
+      nameLine,
+      colWidths[0] - 3,
+    ) as string[];
+    const rowH = Math.max(9, 4 + nameWrapped.length * 3.6);
+
+    doc.setFillColor(...bg);
+    doc.rect(x, cy, width, rowH, "F");
 
     const cells = [
-      nameLine,
-      formatEuro(s.investNet, true),
-      formatEuro(s.savings, true),
-      `${s.payback.toFixed(1)} J.`,
-      `${s.co2.toFixed(1)} t`,
-      `${s.autarky} %`,
+      nameWrapped,
+      [formatEuro(s.investNet, true)],
+      [formatEuro(s.savings, true)],
+      [`${s.payback.toFixed(1)} J.`],
+      [`${s.co2.toFixed(1)} t`],
+      [`${s.autarky} %`],
     ];
 
     doc.setFontSize(6.5);
@@ -668,11 +675,11 @@ export function drawScenarioComparisonTable(
     doc.setTextColor(...NAVY);
     let cx = x + 2;
     cells.forEach((cell, i) => {
-      const truncated =
-        i === 0
-          ? (doc.splitTextToSize(cell, colWidths[i] - 2)[0] as string)
-          : cell;
-      doc.text(truncated, cx + 1, cy + 6);
+      if (i === 0) {
+        doc.text(cell as string[], cx + 1, cy + 5);
+      } else {
+        doc.text((cell as string[])[0], cx + 1, cy + 5);
+      }
       cx += colWidths[i];
     });
     cy += rowH;
@@ -694,9 +701,11 @@ export function drawNumberedSteps(
   steps: { title: string; description: string }[],
 ): number {
   let cy = y;
-  const stepH = 14;
 
   steps.forEach((step, i) => {
+    const desc = doc.splitTextToSize(step.description, width - 12) as string[];
+    const blockH = Math.max(12, 7 + desc.length * 3.6);
+
     doc.setFillColor(...NAVY);
     doc.circle(x + 4, cy + 4, 3.5, "F");
     doc.setFontSize(7);
@@ -712,10 +721,9 @@ export function drawNumberedSteps(
     doc.setFontSize(7);
     doc.setTextColor(51, 65, 85);
     doc.setFont("helvetica", "normal");
-    const desc = doc.splitTextToSize(step.description, width - 12) as string[];
     doc.text(desc, x + 10, cy + 8);
 
-    cy += stepH + (desc.length > 1 ? (desc.length - 1) * 3 : 0);
+    cy += blockH + 2;
   });
 
   return cy + 2;
@@ -731,26 +739,27 @@ export function drawCoverHero(
   dateStr: string,
   techSummary: string,
 ): number {
+  const heroH = 58;
   doc.setFillColor(...NAVY);
-  doc.rect(0, 0, pageWidth, 52, "F");
+  doc.rect(0, 0, pageWidth, heroH, "F");
   doc.setFillColor(...CYAN);
-  doc.rect(0, 52, pageWidth, 1.2, "F");
+  doc.rect(0, heroH, pageWidth, 1.2, "F");
   doc.setFillColor(...GREEN);
-  doc.rect(0, 53.2, pageWidth, 0.6, "F");
+  doc.rect(0, heroH + 1.2, pageWidth, 0.6, "F");
 
   doc.setTextColor(...CYAN);
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
   doc.text(BRAND.tagline.toUpperCase(), margin, 14);
 
-  doc.setFontSize(24);
+  doc.setFontSize(22);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(255, 255, 255);
   const titleLines = doc.splitTextToSize(
     projectLabel,
     pageWidth - margin * 2,
   ) as string[];
-  doc.text(titleLines, margin, 26);
+  doc.text(titleLines.slice(0, 2), margin, 26);
 
   doc.setFontSize(11);
   doc.setFont("helvetica", "normal");
@@ -759,10 +768,406 @@ export function drawCoverHero(
 
   doc.setFontSize(9);
   doc.text(`${address} · ${dateStr}`, margin, 46);
-  doc.setTextColor(...GREEN);
-  doc.text(techSummary, pageWidth - margin, 46, { align: "right" });
 
-  return 62;
+  doc.setTextColor(...GREEN);
+  doc.setFont("helvetica", "bold");
+  const techLines = doc.splitTextToSize(
+    techSummary,
+    pageWidth - margin * 2,
+  ) as string[];
+  doc.text(techLines.slice(0, 2), margin, 53);
+
+  return heroH + 6;
+}
+
+/** Kompakte Projekt-Fakten als Kacheln (Titelseite) */
+export function drawProjectSnapshotTiles(
+  doc: PdfDoc,
+  x: number,
+  y: number,
+  width: number,
+  facts: { label: string; value: string }[],
+): number {
+  const cols = 2;
+  const gap = 3;
+  const tileW = (width - gap) / cols;
+  const tileH = 16;
+  const rows = Math.ceil(facts.length / cols);
+
+  facts.forEach((fact, i) => {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const tx = x + col * (tileW + gap);
+    const ty = y + row * (tileH + gap);
+
+    doc.setFillColor(...LIGHT_BG);
+    doc.setDrawColor(...CYAN);
+    doc.setLineWidth(0.2);
+    doc.roundedRect(tx, ty, tileW, tileH, 1.5, 1.5, "FD");
+
+    doc.setFontSize(6);
+    doc.setTextColor(...CYAN);
+    doc.setFont("helvetica", "bold");
+    doc.text(fact.label.toUpperCase(), tx + 3, ty + 5);
+
+    doc.setFontSize(8);
+    doc.setTextColor(...NAVY);
+    doc.setFont("helvetica", "normal");
+    const valueLines = doc.splitTextToSize(fact.value, tileW - 6) as string[];
+    doc.text(valueLines.slice(0, 2), tx + 3, ty + 10);
+  });
+
+  return y + rows * (tileH + gap) + 2;
+}
+
+export interface PdfScenarioCard {
+  name: string;
+  techLabel: string;
+  isCurrent: boolean;
+  isRecommended: boolean;
+  investNet: number;
+  savings: number;
+  payback: number;
+  co2: number;
+  autarky: number;
+}
+
+/** KPI-Streifen mit hellen Kacheln (wie Dashboard) */
+export function drawLightKpiStrip(
+  doc: PdfDoc,
+  x: number,
+  y: number,
+  width: number,
+  result: CalculationResult,
+  targetPaybackYears: number,
+): number {
+  const kpis = [
+    {
+      label: "Amortisation",
+      value: `${result.economics.paybackYears.toFixed(1)} J.`,
+      hint: `Ziel ${targetPaybackYears} J.`,
+      accent: CYAN,
+      tint: [236, 254, 255] as [number, number, number],
+    },
+    {
+      label: "CO₂-Einsparung",
+      value: `${(result.environment.co2SavingsKg / 1000).toFixed(1)} t/a`,
+      hint: `vorher ${(result.environment.co2BaselineKg / 1000).toFixed(1)} t/a`,
+      accent: GREEN,
+      tint: [240, 253, 244] as [number, number, number],
+    },
+    {
+      label: "NPV (20 J.)",
+      value: formatEuro(result.economics.npvEur),
+      hint: `${formatEuro(result.economics.annualSavingsEur)}/a`,
+      accent: NAVY,
+      tint: LIGHT_BG,
+    },
+    {
+      label: "Autarkie",
+      value: `${result.annual.autarkyPercent} %`,
+      hint: `${result.annual.selfConsumptionKwh.toLocaleString("de-DE")} kWh`,
+      accent: CYAN,
+      tint: [236, 254, 255] as [number, number, number],
+    },
+  ];
+
+  const gap = 2.5;
+  const tileW = (width - gap * 3) / 4;
+  const tileH = 22;
+
+  kpis.forEach((kpi, i) => {
+    const tx = x + i * (tileW + gap);
+    doc.setFillColor(...kpi.tint);
+    doc.setDrawColor(...kpi.accent);
+    doc.setLineWidth(0.25);
+    doc.roundedRect(tx, y, tileW, tileH, 1.5, 1.5, "FD");
+
+    doc.setFontSize(6);
+    doc.setTextColor(...SLATE);
+    doc.setFont("helvetica", "bold");
+    doc.text(kpi.label.toUpperCase(), tx + 2.5, y + 5);
+
+    doc.setFontSize(11);
+    doc.setTextColor(...NAVY);
+    doc.setFont("helvetica", "bold");
+    doc.text(kpi.value, tx + 2.5, y + 12.5);
+
+    doc.setFontSize(5.5);
+    doc.setTextColor(...SLATE);
+    doc.setFont("helvetica", "normal");
+    doc.text(kpi.hint, tx + 2.5, y + 17.5);
+  });
+
+  return y + tileH + 4;
+}
+
+/** Technologie-Dimensionierung als Chip-Zeile */
+export function drawSizingChips(
+  doc: PdfDoc,
+  x: number,
+  y: number,
+  width: number,
+  items: { label: string; value: string }[],
+): number {
+  if (items.length === 0) return y;
+
+  doc.setFontSize(7);
+  doc.setTextColor(...CYAN);
+  doc.setFont("helvetica", "bold");
+  doc.text("IHR TECHNOLOGIE-MIX", x, y);
+  y += 5;
+
+  const chipH = 11;
+  let cx = x;
+  let rowY = y;
+
+  items.forEach((item, i) => {
+    doc.setFontSize(7);
+    doc.setFont("helvetica", "bold");
+    const chipText = `${item.value} · ${item.label}`;
+    const chipW = Math.min(
+      doc.getTextWidth(chipText) + 6,
+      width - (cx - x),
+    );
+
+    if (cx + chipW > x + width && i > 0) {
+      cx = x;
+      rowY += chipH + 2;
+    }
+
+    doc.setFillColor(...LIGHT_BG);
+    doc.setDrawColor(226, 232, 240);
+    doc.setLineWidth(0.15);
+    doc.roundedRect(cx, rowY, chipW, chipH, 1, 1, "FD");
+    doc.setTextColor(...NAVY);
+    doc.text(chipText, cx + 3, rowY + 7);
+    cx += chipW + 2;
+  });
+
+  return rowY + chipH + 4;
+}
+
+/** Tagline-Box (Executive Summary) */
+export function drawTaglineBox(
+  doc: PdfDoc,
+  x: number,
+  y: number,
+  width: number,
+  tagline: string,
+): number {
+  const padding = 4;
+  const wrapped = doc.splitTextToSize(tagline, width - padding * 2) as string[];
+  const boxH = 6 + wrapped.length * 4.2;
+
+  doc.setFillColor(236, 254, 255);
+  doc.setDrawColor(...CYAN);
+  doc.setLineWidth(0.2);
+  doc.roundedRect(x, y, width, boxH, 2, 2, "FD");
+
+  doc.setFontSize(9);
+  doc.setTextColor(51, 65, 85);
+  doc.setFont("helvetica", "normal");
+  doc.text(wrapped, x + padding, y + 5);
+
+  return y + boxH + 4;
+}
+
+/** Kosten: Hero-Einsparung + Amortisation */
+export function drawSavingsHeroBlock(
+  doc: PdfDoc,
+  x: number,
+  y: number,
+  width: number,
+  result: CalculationResult,
+): number {
+  const boxH = 22;
+  doc.setFillColor(240, 253, 244);
+  doc.setDrawColor(...GREEN);
+  doc.setLineWidth(0.2);
+  doc.roundedRect(x, y, width, boxH, 2, 2, "FD");
+
+  doc.setFontSize(7);
+  doc.setTextColor(...GREEN);
+  doc.setFont("helvetica", "bold");
+  doc.text("JÄHRLICHE EINSPARUNG", x + 4, y + 7);
+
+  doc.setFontSize(16);
+  doc.setTextColor(21, 128, 61);
+  doc.setFont("helvetica", "bold");
+  doc.text(
+    `${result.economics.annualSavingsEur.toLocaleString("de-DE")} €/a`,
+    x + 4,
+    y + 16,
+  );
+
+  doc.setFontSize(8);
+  doc.setTextColor(...SLATE);
+  doc.setFont("helvetica", "normal");
+  doc.text(
+    `Amortisation in ${result.economics.paybackYears.toFixed(1)} Jahren`,
+    x + width - 4,
+    y + 16,
+    { align: "right" },
+  );
+
+  return y + boxH + 5;
+}
+
+/** CO₂: Vorher/Nachher mit Fortschrittsbalken */
+export function drawCo2ReductionVisual(
+  doc: PdfDoc,
+  x: number,
+  y: number,
+  width: number,
+  env: EnvironmentResult,
+  analogy: string,
+): number {
+  const before = env.co2BaselineKg / 1000;
+  const after = env.co2AfterKg / 1000;
+  const saved = env.co2SavingsKg / 1000;
+  const reductionPct =
+    before > 0 ? Math.round((saved / before) * 100) : 0;
+  const afterPct = before > 0 ? (after / before) * 100 : 0;
+
+  doc.setFontSize(7);
+  doc.setTextColor(...SLATE);
+  doc.setFont("helvetica", "bold");
+  doc.text("VORHER", x, y + 4);
+  doc.text("NACHHER", x + width, y + 4, { align: "right" });
+
+  doc.setFontSize(14);
+  doc.setTextColor(...SLATE);
+  doc.text(`${before.toFixed(1)} t/a`, x, y + 12);
+  doc.setTextColor(...GREEN);
+  doc.text(`${after.toFixed(1)} t/a`, x + width, y + 12, { align: "right" });
+
+  doc.setFontSize(9);
+  doc.setTextColor(...GREEN);
+  doc.text(`−${reductionPct} %`, x + width / 2, y + 8, { align: "center" });
+
+  const barY = y + 16;
+  const barH = 7;
+  doc.setFillColor(148, 163, 184);
+  doc.roundedRect(x, barY, width, barH, 2, 2, "F");
+  doc.setFillColor(...GREEN);
+  doc.roundedRect(
+    x,
+    barY,
+    width * (Math.max(afterPct, 8) / 100),
+    barH,
+    2,
+    2,
+    "F",
+  );
+
+  doc.setFontSize(6.5);
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica", "bold");
+  doc.text(
+    `${saved.toFixed(1)} t CO₂ weniger / Jahr`,
+    x + width / 2,
+    barY + 4.8,
+    { align: "center" },
+  );
+
+  doc.setFontSize(8);
+  doc.setTextColor(...SLATE);
+  doc.setFont("helvetica", "normal");
+  const analogyWrapped = doc.splitTextToSize(analogy, width) as string[];
+  doc.text(analogyWrapped.slice(0, 2), x, barY + barH + 5);
+
+  return barY + barH + (analogyWrapped.length > 1 ? 14 : 10);
+}
+
+/** Szenario-Vergleich als drei Karten nebeneinander */
+export function drawScenarioComparisonCards(
+  doc: PdfDoc,
+  x: number,
+  y: number,
+  width: number,
+  scenarios: PdfScenarioCard[],
+): number {
+  const gap = 3;
+  const cardW = (width - gap * (scenarios.length - 1)) / scenarios.length;
+  const cardH = 62;
+  let maxY = y;
+
+  scenarios.forEach((s, i) => {
+    const cx = x + i * (cardW + gap);
+    const accent = s.isCurrent ? CYAN : [226, 232, 240] as [number, number, number];
+    const fill: [number, number, number] = s.isCurrent
+      ? [236, 254, 255]
+      : [255, 255, 255];
+
+    doc.setFillColor(...fill);
+    doc.setDrawColor(...accent);
+    doc.setLineWidth(s.isCurrent ? 0.4 : 0.2);
+    doc.roundedRect(cx, y, cardW, cardH, 2, 2, "FD");
+
+    let cy = y + 4;
+    doc.setFontSize(5.5);
+    doc.setFont("helvetica", "bold");
+    if (s.isCurrent) {
+      doc.setTextColor(...CYAN);
+      doc.text("✓ IHR KONZEPT", cx + 2.5, cy);
+      cy += 3.5;
+    }
+    if (s.isRecommended) {
+      doc.setTextColor(...GREEN);
+      doc.text("★ EMPFOHLEN", cx + 2.5, cy);
+      cy += 3.5;
+    }
+
+    doc.setFontSize(8);
+    doc.setTextColor(...NAVY);
+    doc.setFont("helvetica", "bold");
+    const nameLines = doc.splitTextToSize(s.name, cardW - 5) as string[];
+    doc.text(nameLines.slice(0, 2), cx + 2.5, cy + 3);
+    cy += nameLines.length > 1 ? 8 : 5;
+
+    doc.setFontSize(6);
+    doc.setTextColor(...SLATE);
+    doc.setFont("helvetica", "normal");
+    doc.text(s.techLabel.slice(0, 28), cx + 2.5, cy + 2);
+    cy += 5;
+
+    const heroH = 14;
+    const heroFill: [number, number, number] = s.isCurrent
+      ? [240, 253, 244]
+      : LIGHT_BG;
+    doc.setFillColor(...heroFill);
+    doc.roundedRect(cx + 2, cy, cardW - 4, heroH, 1.5, 1.5, "F");
+    doc.setFontSize(5);
+    doc.setTextColor(...SLATE);
+    doc.text("Einsparung / Jahr", cx + 4, cy + 4);
+    doc.setFontSize(10);
+    doc.setTextColor(...(s.isCurrent ? GREEN : NAVY));
+    doc.setFont("helvetica", "bold");
+    doc.text(formatEuro(s.savings), cx + 4, cy + 11);
+    cy += heroH + 3;
+
+    const stats = [
+      ["Invest.", formatEuro(s.investNet, true)],
+      ["Amort.", `${s.payback.toFixed(1)} J.`],
+      ["CO₂", `${s.co2.toFixed(1)} t/a`],
+      ["Autarkie", `${s.autarky} %`],
+    ];
+    stats.forEach(([label, val]) => {
+      doc.setFontSize(6);
+      doc.setTextColor(...SLATE);
+      doc.setFont("helvetica", "normal");
+      doc.text(label, cx + 2.5, cy + 3);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...NAVY);
+      doc.text(val, cx + cardW - 2.5, cy + 3, { align: "right" });
+      cy += 4.5;
+    });
+
+    maxY = Math.max(maxY, y + cardH);
+  });
+
+  return maxY + 4;
 }
 
 export { NAVY, CYAN, GREEN, SLATE, formatEuro, formatKwh };

@@ -28,7 +28,7 @@ export function ConceptSizingStrip({
     <div
       className={
         compact
-          ? "space-y-2"
+          ? "rounded-lg border border-[#0F172A]/6 bg-[#F8FAFC]/60 px-3 py-2.5 dark:border-white/10 dark:bg-[#0F172A]/25"
           : "rounded-xl border border-[#0F172A]/8 bg-[#F8FAFC]/80 p-3 dark:border-white/10 dark:bg-[#0F172A]/30"
       }
     >

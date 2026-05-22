@@ -17,7 +17,7 @@ import { CashflowChart } from "@/app/components/dashboard/CashflowChart";
 import { CostComparisonChart } from "@/app/components/dashboard/CostComparisonChart";
 import { TechnologyCards } from "@/app/components/dashboard/TechnologyCards";
 import { SpeicherpilotDialog } from "@/app/components/dashboard/SpeicherpilotDialog";
-import { CustomerResultSummary } from "@/app/components/dashboard/CustomerResultSummary";
+import { ConceptOverviewSection } from "@/app/components/dashboard/ConceptOverviewSection";
 import { CustomerCostSection } from "@/app/components/dashboard/CustomerCostSection";
 import { CustomerCo2Section } from "@/app/components/dashboard/CustomerCo2Section";
 import { ScenarioComparison } from "@/app/components/dashboard/ScenarioComparison";
@@ -131,19 +131,15 @@ export function DashboardView() {
             </div>
           </div>
 
-          <CustomerResultSummary
+          <ConceptOverviewSection
             project={activeProject}
             result={result}
             insights={insights}
           />
 
           <div className="grid gap-6 lg:grid-cols-2">
-            <CustomerCostSection insights={insights} />
-            <CustomerCo2Section
-              project={activeProject}
-              result={result}
-              insights={insights}
-            />
+            <CustomerCostSection result={result} insights={insights} />
+            <CustomerCo2Section result={result} insights={insights} />
           </div>
 
           <ScenarioComparison scenarios={scenarios} />
