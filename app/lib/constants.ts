@@ -1,12 +1,12 @@
-/** Marken- und UI-Konstanten für EnergieQuartier */
+/** Marken- und UI-Konstanten für DezentralKonzeptPilot */
 export const BRAND = {
-  name: "EnergieQuartier",
+  name: "DezentralKonzeptPilot",
   slogan: "Intelligente Konzepte für Hamburgs Energiezukunft",
   colors: {
-    primary: "#0A4D68",
-    secondary: "#088395",
-    accent: "#00FFCA",
-    background: "#F5F8FA",
+    primary: "#0F172A",
+    cyan: "#06B6D4",
+    green: "#22C55E",
+    background: "#F8FAFC",
   },
 } as const;
 

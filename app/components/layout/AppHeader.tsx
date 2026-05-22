@@ -22,23 +22,23 @@ export function AppHeader() {
   const isLanding = pathname === "/";
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#0A4D68]/10 bg-white/80 backdrop-blur-md dark:bg-[#0A4D68]/95 dark:border-white/10">
+    <header className="sticky top-0 z-50 border-b border-[#0F172A]/8 glass dark:border-white/10">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#0A4D68] text-[#00FFCA] shadow-md group-hover:shadow-lg transition-shadow">
+        <Link href="/" className="group flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#0F172A] text-[#06B6D4] shadow-md transition-shadow group-hover:shadow-lg dark:bg-[#06B6D4] dark:text-[#0F172A]">
             <Bolt className="h-5 w-5" />
           </div>
           <div className="hidden sm:block">
-            <span className="font-semibold text-[#0A4D68] dark:text-white tracking-tight">
+            <span className="font-heading font-semibold tracking-tight text-[#0F172A] dark:text-white">
               {BRAND.name}
             </span>
-            <p className="text-[10px] text-[#088395] dark:text-[#00FFCA]/80 leading-none">
+            <p className="text-[10px] leading-none text-[#06B6D4]">
               HEW Konzeptstudien
             </p>
           </div>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden items-center gap-1 md:flex">
           {NAV_ITEMS.map((item) => {
             const basePath = item.href.split("#")[0];
             const active =
@@ -50,8 +50,8 @@ export function AppHeader() {
                 className={cn(
                   "rounded-md px-3 py-2 text-sm font-medium transition-colors",
                   active
-                    ? "bg-[#0A4D68] text-white"
-                    : "text-[#0A4D68]/80 hover:bg-[#088395]/10 hover:text-[#0A4D68] dark:text-white/90 dark:hover:bg-white/10",
+                    ? "bg-[#0F172A] text-white dark:bg-[#06B6D4] dark:text-[#0F172A]"
+                    : "text-[#0F172A]/75 hover:bg-[#06B6D4]/10 hover:text-[#0F172A] dark:text-white/90 dark:hover:bg-white/10",
                 )}
               >
                 {item.label}
@@ -64,7 +64,7 @@ export function AppHeader() {
           <Button
             variant="ghost"
             size="icon"
-            className="text-[#0A4D68] dark:text-white"
+            className="rounded-full text-[#0F172A] hover:bg-[#06B6D4]/10 dark:text-white dark:hover:bg-white/10"
             onClick={() => setDark(!dark)}
             aria-label="Theme wechseln"
           >
@@ -74,7 +74,7 @@ export function AppHeader() {
           {isLanding && (
             <ButtonLink
               href="/wizard"
-              className="hidden sm:inline-flex bg-[#088395] hover:bg-[#0A4D68] text-white"
+              className="hidden bg-[#06B6D4] text-[#0F172A] hover:bg-[#22C55E] hover:text-[#0F172A] sm:inline-flex"
             >
               Neues Projekt
             </ButtonLink>
@@ -83,7 +83,7 @@ export function AppHeader() {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden text-[#0A4D68]"
+            className="text-[#0F172A] md:hidden dark:text-white"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Menü"
           >
@@ -96,14 +96,14 @@ export function AppHeader() {
         <motion.nav
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
-          className="md:hidden border-t border-[#0A4D68]/10 bg-white dark:bg-[#0A4D68] px-4 py-3"
+          className="border-t border-[#0F172A]/8 glass px-4 py-3 md:hidden dark:border-white/10"
         >
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.id}
               href={item.href}
               onClick={() => setMobileOpen(false)}
-              className="block rounded-md px-3 py-2.5 text-sm font-medium text-[#0A4D68] hover:bg-[#088395]/10 dark:text-white"
+              className="block rounded-md px-3 py-2.5 text-sm font-medium text-[#0F172A] hover:bg-[#06B6D4]/10 dark:text-white"
             >
               {item.label}
             </Link>
@@ -111,7 +111,7 @@ export function AppHeader() {
           <ButtonLink
             href="/wizard"
             onClick={() => setMobileOpen(false)}
-            className="mt-2 w-full bg-[#088395] text-white"
+            className="mt-2 w-full bg-[#06B6D4] text-[#0F172A]"
           >
             Neues Projekt starten
           </ButtonLink>
