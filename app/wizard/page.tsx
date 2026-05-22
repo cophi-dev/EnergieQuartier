@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { WizardForm } from "@/app/components/wizard/WizardForm";
+import { WizardFormSkeleton } from "@/app/components/wizard/WizardFormSkeleton";
 
 export const metadata = {
   title: "Konfigurator | EnergieQuartier",
@@ -6,5 +8,9 @@ export const metadata = {
 };
 
 export default function WizardPage() {
-  return <WizardForm />;
+  return (
+    <Suspense fallback={<WizardFormSkeleton />}>
+      <WizardForm />
+    </Suspense>
+  );
 }

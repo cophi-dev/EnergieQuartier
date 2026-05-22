@@ -26,9 +26,9 @@ export const CHART_COLORS = {
 } as const;
 
 export const NAV_ITEMS = [
+  { id: "home", label: "Home", href: "/" },
   { id: "wizard", label: "Konfigurator", href: "/wizard" },
-  { id: "simulation", label: "Simulation", href: "/dashboard" },
-  { id: "report", label: "Report", href: "/dashboard#report" },
+  { id: "technologien", label: "Technologien entdecken", href: "/technologien" },
   { id: "projekte", label: "Meine Projekte", href: "/projekte" },
 ] as const;
 

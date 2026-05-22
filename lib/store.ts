@@ -3,7 +3,9 @@ import { persist } from "zustand/middleware";
 import { createShowcaseProject } from "@/app/lib/demo-project";
 import {
   createEmptyProject,
+  defaultTechnologies,
   type ProjectData,
+  type TechnologySelection,
 } from "@/app/types/project";
 
 interface ProjectStore {
@@ -14,6 +16,7 @@ interface ProjectStore {
   saveCurrentProject: () => void;
   loadProject: (id: string) => void;
   loadShowcaseProject: () => void;
+  startWizardWithTechnologies: (technologies: Partial<TechnologySelection>) => void;
   deleteProject: (id: string) => void;
 }
 
@@ -65,6 +68,22 @@ export const useProjectStore = create<ProjectStore>()(
         set({
           currentProject: showcase,
           savedProjects: exists ? savedProjects : [...savedProjects, showcase],
+        });
+      },
+
+      startWizardWithTechnologies: (technologies) => {
+        const merged: TechnologySelection = {
+          ...defaultTechnologies,
+          ...technologies,
+        };
+        if (merged.heatPumpAir) merged.heatPumpGround = false;
+        if (merged.heatPumpGround) merged.heatPumpAir = false;
+        const fresh = createEmptyProject();
+        set({
+          currentProject: {
+            ...fresh,
+            technologies: merged,
+          },
         });
       },
 

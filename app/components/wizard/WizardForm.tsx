@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
@@ -64,12 +64,14 @@ function formValuesToProject(
 
 export function WizardForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { currentProject, setCurrentProject, saveCurrentProject, loadShowcaseProject } =
     useProjectStore();
   const [step, setStep] = useState(1);
   const [maxReachedStep, setMaxReachedStep] = useState(1);
   const [hydrated, setHydrated] = useState(false);
   const [demoLoaded, setDemoLoaded] = useState(false);
+  const [techPreselected, setTechPreselected] = useState(false);
 
   const form = useForm<WizardFormValues>({
     resolver: zodResolver(wizardFormSchema),
@@ -96,6 +98,17 @@ export function WizardForm() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated, currentProject.id]);
+
+  useEffect(() => {
+    if (!hydrated || techPreselected) return;
+    const stepParam = searchParams.get("step");
+    const parsed = stepParam ? Number.parseInt(stepParam, 10) : NaN;
+    if (!Number.isNaN(parsed) && parsed >= 1 && parsed <= TOTAL_STEPS) {
+      setStep(parsed);
+      setMaxReachedStep(parsed);
+      setTechPreselected(true);
+    }
+  }, [hydrated, searchParams, techPreselected]);
 
   const prioritiesWatch = useWatch({ control, name: "priorities" });
   const normalizedPreview = useMemo(
