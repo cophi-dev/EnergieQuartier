@@ -73,11 +73,11 @@ export function FeaturesSection() {
           className="mx-auto max-w-2xl text-center"
         >
           <h2 className="font-heading text-3xl font-bold text-[#0F172A] dark:text-white">
-            Alles für die Konzeptentwicklung im Vertrieb
+            Alles für die Konzeptentwicklung
           </h2>
           <p className="mt-4 text-[#0F172A]/65 dark:text-white/70">
-            Von der Erstberatung bis zum PDF-Report – ein Tool für
-            Immobilienkunden der Hamburger Energiewerke.
+            Von der Erstberatung bis zum PDF-Report – für Planer, Berater und
+            Gebäudeeigentümer, die dezentrale Energie schnell durchrechnen wollen.
           </p>
         </motion.div>
 

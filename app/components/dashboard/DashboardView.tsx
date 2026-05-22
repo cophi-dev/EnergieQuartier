@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PdfExportButton } from "@/app/components/dashboard/PdfExportButton";
 import { DashboardProjectSidebar } from "@/app/components/dashboard/DashboardProjectSidebar";
 import { DashboardSkeleton } from "@/app/components/dashboard/DashboardSkeleton";
-import { HewInterviewBanner } from "@/app/components/dashboard/HewInterviewBanner";
+import { ShowcaseBanner } from "@/app/components/dashboard/ShowcaseBanner";
 import { KpiCards } from "@/app/components/dashboard/KpiCards";
 import { EnergySankey } from "@/app/components/dashboard/EnergySankey";
 import { CashflowChart } from "@/app/components/dashboard/CashflowChart";
@@ -18,8 +18,8 @@ import { TechnologyCards } from "@/app/components/dashboard/TechnologyCards";
 import { SpeicherpilotDialog } from "@/app/components/dashboard/SpeicherpilotDialog";
 import { calculateProject } from "@/app/lib/calculations";
 import {
-  createHewShowcaseProject,
-  HEW_SHOWCASE_PROJECT_ID,
+  createShowcaseProject,
+  SHOWCASE_PROJECT_ID,
 } from "@/app/lib/demo-project";
 import { useProjectStore } from "@/lib/store";
 
@@ -32,21 +32,21 @@ export function DashboardView() {
   useEffect(() => setHydrated(true), []);
 
   useEffect(() => {
-    if (hydrated && searchParams.get("demo") === "hew") {
+    if (hydrated && searchParams.get("demo") === "showcase") {
       loadShowcaseProject();
     }
   }, [hydrated, searchParams, loadShowcaseProject]);
 
   const isShowcase =
-    currentProject.id === HEW_SHOWCASE_PROJECT_ID ||
-    searchParams.get("demo") === "hew";
+    currentProject.id === SHOWCASE_PROJECT_ID ||
+    searchParams.get("demo") === "showcase";
   const hasUserProject =
     Boolean(currentProject.name?.trim()) && !isShowcase;
 
   const activeProject = useMemo(() => {
     if (hasUserProject) return currentProject;
     if (isShowcase || !currentProject.name?.trim()) {
-      return createHewShowcaseProject();
+      return createShowcaseProject();
     }
     return currentProject;
   }, [hasUserProject, isShowcase, currentProject]);
@@ -68,7 +68,7 @@ export function DashboardView() {
 
       <div className="flex flex-1 flex-col lg:flex-row">
         <div className="flex-1 space-y-6 overflow-y-auto p-4 sm:p-6">
-          {isShowcase && <HewInterviewBanner />}
+          {isShowcase && <ShowcaseBanner />}
 
           {!hasUserProject && !isShowcase && (
             <div className="rounded-lg border border-[#06B6D4]/30 bg-[#06B6D4]/8 px-4 py-3 text-sm text-[#0F172A] dark:text-white">
@@ -105,7 +105,7 @@ export function DashboardView() {
                 project={activeProject}
                 result={result}
                 disabled={!canExportPdf}
-                disabledReason="Projekt oder HEW-Demo laden"
+                disabledReason="Projekt oder Beispielprojekt laden"
                 onBeforeExport={
                   canExportPdf ? saveCurrentProject : undefined
                 }
@@ -184,7 +184,7 @@ export function DashboardView() {
             </ButtonLink>
             {!isShowcase && (
               <ButtonLink
-                href="/dashboard?demo=hew"
+                href="/dashboard?demo=showcase"
                 variant="outline"
                 className="w-full border-[#06B6D4] text-[#0F172A] dark:text-[#06B6D4]"
               >

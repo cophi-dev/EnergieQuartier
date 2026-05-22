@@ -57,7 +57,7 @@ export function Step1Building({ control, errors }: StepProps) {
             render={({ field }) => (
               <Input
                 id="name"
-                placeholder="z. B. MFH Musterstraße – HEW Kunde"
+                placeholder="z. B. MFH Musterstraße 12"
                 className="w-full border-[#0F172A]/20"
                 {...field}
               />

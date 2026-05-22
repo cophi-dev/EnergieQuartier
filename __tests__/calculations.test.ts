@@ -1,10 +1,10 @@
 import { calculateProject } from "@/app/lib/calculations";
-import { createHewShowcaseProject } from "@/app/lib/demo-project";
+import { createShowcaseProject } from "@/app/lib/demo-project";
 import type { ProjectData } from "@/app/types/project";
 
 function baseProject(overrides: Partial<ProjectData> = {}): ProjectData {
   return {
-    ...createHewShowcaseProject(),
+    ...createShowcaseProject(),
     id: "test-project",
     ...overrides,
   };
@@ -31,7 +31,7 @@ describe("calculateProject", () => {
   });
 
   it("wendet PV-Förderung (~20 %) und WP-Förderung (~30 %) an", () => {
-    const result = calculateProject(createHewShowcaseProject());
+    const result = calculateProject(createShowcaseProject());
     expect(result.investment.gross).toBeGreaterThan(result.investment.net);
     expect(result.investment.subsidies).toBeGreaterThan(0);
     const subsidyShare =
@@ -40,8 +40,8 @@ describe("calculateProject", () => {
     expect(subsidyShare).toBeLessThan(0.45);
   });
 
-  it("liefert positive Einsparung und NPV für HEW-Showcase", () => {
-    const result = calculateProject(createHewShowcaseProject());
+  it("liefert positive Einsparung und NPV für Beispielprojekt", () => {
+    const result = calculateProject(createShowcaseProject());
     expect(result.economics.annualSavingsEur).toBeGreaterThan(0);
     expect(result.economics.paybackYears).toBeLessThan(25);
     expect(result.environment.co2SavingsKg).toBeGreaterThan(0);
@@ -50,7 +50,7 @@ describe("calculateProject", () => {
   });
 
   it("erzeugt gültige Sankey-Daten ohne isolierte Knoten", () => {
-    const result = calculateProject(createHewShowcaseProject());
+    const result = calculateProject(createShowcaseProject());
     expect(result.sankey.nodes.length).toBeGreaterThan(0);
     expect(result.sankey.links.length).toBeGreaterThan(0);
     for (const link of result.sankey.links) {
@@ -61,7 +61,7 @@ describe("calculateProject", () => {
   });
 
   it("Cashflow startet mit negativer Investition in Jahr 0", () => {
-    const result = calculateProject(createHewShowcaseProject());
+    const result = calculateProject(createShowcaseProject());
     expect(result.cashflowYears[0].year).toBe(0);
     expect(result.cashflowYears[0].savings).toBeLessThan(0);
     expect(result.cashflowYears).toHaveLength(21);

@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { calculateProject } from "@/app/lib/calculations";
-import { HEW_SHOWCASE_PROJECT_ID } from "@/app/lib/demo-project";
+import { SHOWCASE_PROJECT_ID } from "@/app/lib/demo-project";
 import { useProjectStore } from "@/lib/store";
 import { Skeleton } from "@/app/components/wizard/WizardFormSkeleton";
 import type { ProjectData } from "@/app/types/project";
@@ -180,9 +180,9 @@ export function ProjectsList() {
                       <div>
                         <CardTitle className="text-[#0F172A] dark:text-white flex items-center gap-2">
                           {project.name}
-                          {project.id === HEW_SHOWCASE_PROJECT_ID && (
+                          {project.id === SHOWCASE_PROJECT_ID && (
                             <Badge className="bg-[#22C55E]/15 text-[#22C55E] text-[10px]">
-                              HEW-Demo
+                              Beispiel
                             </Badge>
                           )}
                         </CardTitle>

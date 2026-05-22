@@ -1,8 +1,8 @@
 # EnergieQuartier
 
-**Intelligente Konzepte für Hamburgs Energiezukunft**
+**Konzeptstudien für dezentrale Energie**
 
-MVP-Web-App zur schnellen Erstellung von Konzeptstudien für dezentrale Energieversorgungslösungen (PV, Wärmepumpe, Batterie, Solarthermie) – für den Vertrieb bei den Hamburger Energiewerken.
+Web-App zur schnellen Erstellung von Konzeptstudien für dezentrale Energieversorgung (PV, Wärmepumpe, Batterie, Solarthermie) – mit Sankey, KPIs und PDF-Export.
 
 ## Tech Stack
 
@@ -22,14 +22,14 @@ npm run dev
 
 ### Demo-Flow
 
-1. **Landing** → „Neues Projekt starten“ oder **„HEW-Demo laden“**
+1. **Landing** → „Neues Projekt starten“ oder **„Demo Projekt laden“**
 2. **Wizard** (`/wizard`) → 5 Schritte → **Berechnen**
 3. **Dashboard** (`/dashboard`) → Sankey, KPIs, Charts, **PDF-Report**
 4. **Meine Projekte** (`/projekte`) → gespeicherte Studien (localStorage)
 
-### HEW-Vorstellungsdemo
+### Beispielprojekt
 
-- Festes Showcase-Projekt: MFH Elbchaussee (`/dashboard?demo=hew`)
+- Festes Demo-Objekt: MFH Hammerbrook (`/dashboard?demo=showcase`)
 - KPIs in Hero-Mockup und Dashboard-Banner stammen aus derselben Berechnung
 
 ### Speicherpilot
@@ -63,9 +63,9 @@ lib/store.ts              Zustand-Store (localStorage)
 
 ## Markenfarben
 
-| Rolle      | Hex       |
-|------------|-----------|
-| Primär     | `#0A4D68` |
-| Sekundär   | `#088395` |
-| Akzent     | `#00FFCA` |
-| Hintergrund| `#F5F8FA` |
+| Rolle       | Hex       |
+|-------------|-----------|
+| Primär      | `#0F172A` |
+| Akzent Cyan | `#06B6D4` |
+| Akzent Grün | `#22C55E` |
+| Hintergrund | `#F8FAFC` |

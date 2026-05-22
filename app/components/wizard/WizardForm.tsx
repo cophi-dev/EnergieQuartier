@@ -17,7 +17,7 @@ import { Step3Priorities } from "@/app/components/wizard/steps/Step3Priorities";
 import { Step4Technology } from "@/app/components/wizard/steps/Step4Technology";
 import { Step5Details } from "@/app/components/wizard/steps/Step5Details";
 import { WIZARD_STEPS } from "@/app/lib/constants";
-import { createHewShowcaseProject, HEW_SHOWCASE_SUMMARY } from "@/app/lib/demo-project";
+import { createShowcaseProject, SHOWCASE_SUMMARY } from "@/app/lib/demo-project";
 import {
   normalizePriorities,
   WIZARD_STEP_FIELDS,
@@ -115,7 +115,7 @@ export function WizardForm() {
 
   const loadDemoProject = useCallback(() => {
     loadShowcaseProject();
-    const demo = createHewShowcaseProject();
+    const demo = createShowcaseProject();
     reset(projectToFormValues(demo));
     setCurrentProject(demo);
     setStep(1);
@@ -235,7 +235,7 @@ export function WizardForm() {
             className="border-b border-[#22C55E]/20 bg-[#22C55E]/8 px-4 py-2.5 text-sm text-[#0F172A] dark:text-white"
           >
             <span className="font-medium text-[#22C55E]">Demo geladen:</span>{" "}
-            {HEW_SHOWCASE_SUMMARY} – alle Schritte sind vorausgefüllt.
+            {SHOWCASE_SUMMARY} – alle Schritte sind vorausgefüllt.
           </motion.div>
         )}
 

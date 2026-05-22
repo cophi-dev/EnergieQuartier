@@ -141,7 +141,7 @@ export async function downloadPdfReport(
   doc.text(BRAND.slogan, MARGIN, 22);
   doc.setTextColor(...GREEN);
   doc.setFontSize(8);
-  doc.text("Hamburger Energiewerke · Konzeptstudie", MARGIN, 28);
+  doc.text(`${BRAND.name} · Konzeptstudie`, MARGIN, 28);
   doc.setTextColor(255, 255, 255);
   doc.text(`Erstellt am ${dateStr}`, PAGE_WIDTH - MARGIN, 28, { align: "right" });
 
@@ -224,5 +224,5 @@ export async function downloadPdfReport(
     .replace(/[^a-zA-Z0-9äöüÄÖÜß\-_ ]/g, "")
     .trim()
     .slice(0, 40) || "Konzeptstudie";
-  doc.save(`DezentralKonzeptPilot_${safeName}_${dateStr.replace(/\./g, "-")}.pdf`);
+  doc.save(`EnergieQuartier_${safeName}_${dateStr.replace(/\./g, "-")}.pdf`);
 }

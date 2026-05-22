@@ -1,7 +1,9 @@
-/** Marken- und UI-Konstanten für DezentralKonzeptPilot */
+/** Marken- und UI-Konstanten für EnergieQuartier */
 export const BRAND = {
-  name: "DezentralKonzeptPilot",
-  slogan: "Intelligente Konzepte für Hamburgs Energiezukunft",
+  name: "EnergieQuartier",
+  tagline: "Konzeptstudien für dezentrale Energie",
+  slogan:
+    "PV, Wärmepumpe und Speicher planen – mit Sankey, KPIs und PDF in Minuten",
   colors: {
     primary: "#0F172A",
     cyan: "#06B6D4",
@@ -10,7 +12,7 @@ export const BRAND = {
   },
   pdf: {
     footerNote:
-      "Showcase für die Bewerbung als Projektingenieur Vertrieb · Hamburger Energiewerken",
+      "Erstellt mit EnergieQuartier · Vereinfachte Modellrechnung, keine verbindliche Planungsgrundlage.",
   },
 } as const;
 

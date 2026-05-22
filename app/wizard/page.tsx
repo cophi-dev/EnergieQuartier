@@ -1,7 +1,7 @@
 import { WizardForm } from "@/app/components/wizard/WizardForm";
 
 export const metadata = {
-  title: "Konfigurator | DezentralKonzeptPilot",
+  title: "Konfigurator | EnergieQuartier",
   description: "5-Schritte-Wizard für dezentrale Energiekonzepte",
 };
 

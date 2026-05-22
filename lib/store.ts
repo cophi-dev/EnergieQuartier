@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { createHewShowcaseProject } from "@/app/lib/demo-project";
+import { createShowcaseProject } from "@/app/lib/demo-project";
 import {
   createEmptyProject,
   type ProjectData,
@@ -59,7 +59,7 @@ export const useProjectStore = create<ProjectStore>()(
       },
 
       loadShowcaseProject: () => {
-        const showcase = createHewShowcaseProject();
+        const showcase = createShowcaseProject();
         const { savedProjects } = get();
         const exists = savedProjects.some((p) => p.id === showcase.id);
         set({

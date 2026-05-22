@@ -3,7 +3,7 @@ import { DashboardView } from "@/app/components/dashboard/DashboardView";
 import { DashboardSkeleton } from "@/app/components/dashboard/DashboardSkeleton";
 
 export const metadata = {
-  title: "Simulation & Report | DezentralKonzeptPilot",
+  title: "Simulation & Report | EnergieQuartier",
   description: "Ergebnis-Dashboard mit Sankey, KPIs und Wirtschaftlichkeit",
 };
 

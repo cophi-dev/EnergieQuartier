@@ -41,14 +41,9 @@ export function AppFooter() {
             </p>
           </div>
         </div>
-        <div className="mt-8 space-y-2 border-t border-white/10 pt-6 text-center">
-          <p className="text-[11px] text-white/40">
-            Entwickelt als Showcase für die Bewerbung als Projektingenieur Vertrieb
-            bei Hamburger Energiewerken
-          </p>
+        <div className="mt-8 border-t border-white/10 pt-6 text-center">
           <p className="text-xs text-white/50">
-            © {new Date().getFullYear()} {BRAND.name} · Konzepttool für Hamburger
-            Energiewerke
+            © {new Date().getFullYear()} {BRAND.name} · {BRAND.tagline}
           </p>
         </div>
       </div>

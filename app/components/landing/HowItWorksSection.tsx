@@ -20,7 +20,7 @@ export function HowItWorksSection() {
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-[#0F172A]/65 dark:text-white/70">
             Der Wizard führt Sie strukturiert von der Gebäudeerfassung bis zur
-            Technologieauswahl – oder laden Sie die HEW-Demo mit einem Klick.
+            Technologieauswahl – oder laden Sie das Beispielprojekt mit einem Klick.
           </p>
         </motion.div>
 

@@ -19,7 +19,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: `${BRAND.name} – Konzeptstudien für dezentrale Energie`,
+  title: `${BRAND.name} – ${BRAND.tagline}`,
   description: BRAND.slogan,
 };
 

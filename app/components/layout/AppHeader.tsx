@@ -33,7 +33,7 @@ export function AppHeader() {
               {BRAND.name}
             </span>
             <p className="text-[10px] leading-none text-[#06B6D4]">
-              HEW Konzeptstudien
+              {BRAND.tagline}
             </p>
           </div>
         </Link>

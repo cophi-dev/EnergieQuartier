@@ -12,7 +12,7 @@ import { ButtonLink } from "@/app/components/ui/ButtonLink";
 import { AnimatedNumber } from "@/app/components/ui/AnimatedNumber";
 import { Badge } from "@/components/ui/badge";
 import { BRAND } from "@/app/lib/constants";
-import { HEW_SHOWCASE_KPI_PREVIEW } from "@/app/lib/demo-project";
+import { SHOWCASE_KPI_PREVIEW } from "@/app/lib/demo-project";
 import { ShowcaseCta } from "@/app/components/landing/ShowcaseCta";
 import { HeroBackground } from "@/app/components/landing/HeroBackground";
 
@@ -28,24 +28,24 @@ const fadeUp = {
 const heroKpis = [
   {
     label: "Amortisation",
-    raw: parseFloat(HEW_SHOWCASE_KPI_PREVIEW.paybackYears.replace(",", ".")),
+    raw: parseFloat(SHOWCASE_KPI_PREVIEW.paybackYears.replace(",", ".")),
     suffix: " J.",
     color: "#06B6D4",
     decimals: 1,
   },
   {
     label: "CO₂-Einsparung",
-    display: HEW_SHOWCASE_KPI_PREVIEW.co2Savings,
+    display: SHOWCASE_KPI_PREVIEW.co2Savings,
     color: "#22C55E",
   },
   {
     label: "NPV (20 J.)",
-    display: HEW_SHOWCASE_KPI_PREVIEW.npv,
+    display: SHOWCASE_KPI_PREVIEW.npv,
     color: "#0F172A",
   },
   {
     label: "Autarkie",
-    raw: parseFloat(HEW_SHOWCASE_KPI_PREVIEW.autarky),
+    raw: parseFloat(SHOWCASE_KPI_PREVIEW.autarky),
     suffix: " %",
     color: "#06B6D4",
     decimals: 0,
@@ -60,18 +60,9 @@ export function HeroSection() {
       <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-28 lg:px-8">
         <div>
           <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible">
-            <Badge className="mb-3 glass border-[#06B6D4]/30 text-[#0F172A] dark:text-[#06B6D4] hover:bg-[#06B6D4]/10">
+            <Badge className="mb-4 glass border-[#06B6D4]/30 text-[#0F172A] dark:text-[#06B6D4] hover:bg-[#06B6D4]/10">
               <MapPin className="mr-1.5 h-3 w-3" />
-              Live-Demo für die Energie- & Wärmewende in Hamburg
-            </Badge>
-          </motion.div>
-
-          <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible">
-            <Badge
-              variant="outline"
-              className="mb-4 border-[#22C55E]/40 bg-[#22C55E]/5 text-[#0F172A]/80 dark:text-[#22C55E]"
-            >
-              Für den Vertrieb · Hamburger Energiewerke
+              Konzeptstudien für Mehrfamilienhäuser & Quartiere
             </Badge>
           </motion.div>
 
@@ -95,8 +86,8 @@ export function HeroSection() {
             animate="visible"
             className="mt-6 max-w-xl text-lg leading-relaxed text-[#0F172A]/70 dark:text-white/75"
           >
-            {BRAND.slogan}. Erstellen Sie PV-, Wärmepumpen- und Speicherkonzepte
-            mit Wirtschaftlichkeitsbetrachtung – direkt im Kundengespräch.
+            {BRAND.slogan}. Von der Erstberatung bis zum PDF-Report – alles in
+            einem Tool, ohne Excel und ohne Medienbruch.
           </motion.p>
 
           <motion.div
@@ -149,7 +140,7 @@ export function HeroSection() {
           <div className="gradient-border glass-card rounded-2xl p-6 shadow-2xl shadow-[#0F172A]/10">
             <div className="flex items-center justify-between border-b border-[#0F172A]/8 pb-4 dark:border-white/10">
               <span className="text-sm font-semibold text-[#0F172A] dark:text-white">
-                MFH Hammerbrook · HEW-Demo
+                MFH Hammerbrook · Beispielprojekt
               </span>
               <span className="rounded-full bg-[#22C55E]/15 px-2.5 py-0.5 text-xs font-medium text-[#22C55E] ring-1 ring-[#22C55E]/30">
                 20097 HH

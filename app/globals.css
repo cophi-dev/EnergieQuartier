@@ -38,9 +38,9 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --color-hew-primary: var(--hew-primary);
-  --color-hew-cyan: var(--hew-cyan);
-  --color-hew-green: var(--hew-green);
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-cyan: var(--brand-cyan);
+  --color-brand-green: var(--brand-green);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -51,11 +51,11 @@
 }
 
 :root {
-  /* DezentralKonzeptPilot – Premium Farbschema */
-  --hew-primary: #0f172a;
-  --hew-cyan: #06b6d4;
-  --hew-green: #22c55e;
-  --hew-background: #f8fafc;
+  /* EnergieQuartier – Premium Farbschema */
+  --brand-primary: #0f172a;
+  --brand-cyan: #06b6d4;
+  --brand-green: #22c55e;
+  --brand-background: #f8fafc;
 
   --background: #f8fafc;
   --foreground: #0f172a;

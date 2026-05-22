@@ -41,7 +41,7 @@ export function SpeicherpilotDialog() {
           <ul className="text-sm text-[#0F172A]/80 space-y-2 list-disc pl-4">
             <li>Lastprofil & PV-Erzeugung synchronisieren</li>
             <li>Optimale kWh-Kapazität und Wirtschaftlichkeit</li>
-            <li>Ergebnis zurück in DezentralKonzeptPilot importieren (geplant)</li>
+            <li>Ergebnis zurück importieren (geplant)</li>
           </ul>
           {!configured && (
             <p className="rounded-md bg-[#22C55E]/15 px-3 py-2 text-xs text-[#0F172A]">

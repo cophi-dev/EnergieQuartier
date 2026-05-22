@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useProjectStore } from "@/lib/store";
 
-/** Lädt das HEW-Showcase-Projekt und öffnet das Dashboard */
+/** Lädt das Beispielprojekt und öffnet das Dashboard */
 export function ShowcaseCta() {
   const router = useRouter();
   const loadShowcaseProject = useProjectStore((s) => s.loadShowcaseProject);
