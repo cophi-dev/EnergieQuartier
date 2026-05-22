@@ -149,10 +149,10 @@ export function HeroSection() {
           <div className="gradient-border glass-card rounded-2xl p-6 shadow-2xl shadow-[#0F172A]/10">
             <div className="flex items-center justify-between border-b border-[#0F172A]/8 pb-4 dark:border-white/10">
               <span className="text-sm font-semibold text-[#0F172A] dark:text-white">
-                MFH Elbchaussee · HEW-Demo
+                MFH Hammerbrook · HEW-Demo
               </span>
               <span className="rounded-full bg-[#22C55E]/15 px-2.5 py-0.5 text-xs font-medium text-[#22C55E] ring-1 ring-[#22C55E]/30">
-                22763 HH
+                20097 HH
               </span>
             </div>
 

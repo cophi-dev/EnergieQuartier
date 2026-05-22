@@ -81,10 +81,10 @@ export function Step4Technology({ control, errors, setValue }: StepProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-[#0A4D68] dark:text-white">
+        <h2 className="text-xl font-semibold text-[#0F172A] dark:text-white">
           Technologie-Auswahl
         </h2>
-        <p className="mt-1 text-sm text-[#0A4D68]/60 dark:text-white/60">
+        <p className="mt-1 text-sm text-[#0F172A]/60 dark:text-white/60">
           Kombinieren Sie Komponenten für das Erstkonzept (Luft- und Sole-WP
           schließen sich aus).
         </p>
@@ -106,9 +106,9 @@ export function Step4Technology({ control, errors, setValue }: StepProps) {
               return (
                 <Card
                   className={cn(
-                    "border-[#0A4D68]/10 transition-all cursor-pointer",
+                    "border-[#0F172A]/10 transition-all cursor-pointer",
                     field.value &&
-                      "border-[#088395] ring-2 ring-[#00FFCA]/30 shadow-md",
+                      "border-[#06B6D4] ring-2 ring-[#22C55E]/30 shadow-md",
                   )}
                   onClick={() => {
                     const next = !field.value;
@@ -125,14 +125,14 @@ export function Step4Technology({ control, errors, setValue }: StepProps) {
                         className={cn(
                           "flex h-10 w-10 items-center justify-center rounded-lg",
                           field.value
-                            ? "bg-[#0A4D68] text-[#00FFCA]"
-                            : "bg-[#F5F8FA] text-[#088395]",
+                            ? "bg-[#0F172A] text-[#22C55E]"
+                            : "bg-[#F8FAFC] text-[#06B6D4]",
                         )}
                       >
                         <tech.icon className="h-5 w-5" />
                       </div>
                       <div>
-                        <CardTitle className="text-base text-[#0A4D68] dark:text-white">
+                        <CardTitle className="text-base text-[#0F172A] dark:text-white">
                           {tech.label}
                         </CardTitle>
                         <CardDescription className="text-xs">
@@ -153,13 +153,13 @@ export function Step4Technology({ control, errors, setValue }: StepProps) {
                       variant="outline"
                       className={cn(
                         field.value &&
-                          "bg-[#088395] text-white border-[#088395]",
+                          "bg-[#06B6D4] text-white border-[#06B6D4]",
                       )}
                       aria-label={`${tech.label} aktivieren`}
                     />
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-[#0A4D68]/70 dark:text-white/70">
+                    <p className="text-sm text-[#0F172A]/70 dark:text-white/70">
                       {tech.description}
                     </p>
                   </CardContent>

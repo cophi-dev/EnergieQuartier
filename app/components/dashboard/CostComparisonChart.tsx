@@ -1,5 +1,6 @@
 "use client";
 
+import { CHART_COLORS } from "@/app/lib/constants";
 import {
   Bar,
   BarChart,
@@ -42,10 +43,10 @@ export function CostComparisonChart({ result }: CostComparisonChartProps) {
     <div className="h-[260px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#0A4D68" opacity={0.1} />
-          <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#0A4D68" }} />
+          <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.primary} opacity={0.08} />
+          <XAxis dataKey="name" tick={{ fontSize: 12, fill: CHART_COLORS.tick }} />
           <YAxis
-            tick={{ fontSize: 11, fill: "#0A4D68" }}
+            tick={{ fontSize: 11, fill: CHART_COLORS.tick }}
             tickFormatter={(v) => `${(v / 1000).toFixed(0)}k €`}
           />
           <Tooltip
@@ -58,13 +59,13 @@ export function CostComparisonChart({ result }: CostComparisonChartProps) {
           <Bar
             dataKey="investition"
             name="Investition (netto)"
-            fill="#0A4D68"
+            fill={CHART_COLORS.primary}
             radius={[4, 4, 0, 0]}
           />
           <Bar
             dataKey="einsparung"
             name="Einsparung (20 J.)"
-            fill="#00FFCA"
+            fill={CHART_COLORS.green}
             radius={[4, 4, 0, 0]}
           />
         </BarChart>

@@ -3,15 +3,17 @@ import { BRAND } from "@/app/lib/constants";
 
 export function AppFooter() {
   return (
-    <footer className="border-t border-[#0A4D68]/10 bg-[#0A4D68] text-white/90">
+    <footer className="border-t border-[#0F172A]/20 bg-[#0F172A] text-white/90">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid gap-8 md:grid-cols-3">
           <div>
-            <p className="text-lg font-semibold text-[#00FFCA]">{BRAND.name}</p>
+            <p className="font-heading text-lg font-semibold text-[#06B6D4]">
+              {BRAND.name}
+            </p>
             <p className="mt-2 text-sm text-white/70">{BRAND.slogan}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-[#00FFCA]">Navigation</p>
+            <p className="text-sm font-medium text-[#22C55E]">Navigation</p>
             <ul className="mt-3 space-y-2 text-sm text-white/70">
               <li>
                 <Link href="/wizard" className="hover:text-white">
@@ -31,18 +33,24 @@ export function AppFooter() {
             </ul>
           </div>
           <div>
-            <p className="text-sm font-medium text-[#00FFCA]">Hinweis</p>
-            <p className="mt-3 text-xs text-white/60 leading-relaxed">
+            <p className="text-sm font-medium text-[#22C55E]">Hinweis</p>
+            <p className="mt-3 text-xs leading-relaxed text-white/60">
               MVP-Demonstration für Konzeptstudien dezentraler Energieversorgung.
               Berechnungen sind vereinfachte Modelle – keine verbindliche
               Planungsgrundlage.
             </p>
           </div>
         </div>
-        <p className="mt-8 border-t border-white/10 pt-6 text-center text-xs text-white/50">
-          © {new Date().getFullYear()} {BRAND.name} · Konzepttool für Hamburger
-          Energiewerke
-        </p>
+        <div className="mt-8 space-y-2 border-t border-white/10 pt-6 text-center">
+          <p className="text-[11px] text-white/40">
+            Entwickelt als Showcase für die Bewerbung als Projektingenieur Vertrieb
+            bei Hamburger Energiewerken
+          </p>
+          <p className="text-xs text-white/50">
+            © {new Date().getFullYear()} {BRAND.name} · Konzepttool für Hamburger
+            Energiewerke
+          </p>
+        </div>
       </div>
     </footer>
   );

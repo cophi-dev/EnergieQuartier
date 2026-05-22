@@ -1,7 +1,7 @@
 import { ProjectsList } from "@/app/components/projekte/ProjectsList";
 
 export const metadata = {
-  title: "Meine Projekte | EnergieQuartier",
+  title: "Meine Projekte | DezentralKonzeptPilot",
   description: "Gespeicherte Konzeptstudien im Überblick",
 };
 

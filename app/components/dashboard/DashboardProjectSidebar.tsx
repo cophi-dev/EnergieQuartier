@@ -26,25 +26,25 @@ export function DashboardProjectSidebar({
   ].filter(Boolean);
 
   return (
-    <aside className="hidden xl:block w-64 shrink-0 border-r border-[#0A4D68]/10 bg-white dark:bg-[#0A4D68]/20 p-4 space-y-4">
+    <aside className="glass hidden w-64 shrink-0 space-y-4 border-r border-[#0F172A]/8 p-4 xl:block">
       <div>
-        <h2 className="text-sm font-semibold text-[#088395]">Projekt</h2>
-        <p className="mt-1 text-lg font-bold text-[#0A4D68] dark:text-white leading-tight">
+        <h2 className="text-sm font-semibold text-[#06B6D4]">Projekt</h2>
+        <p className="mt-1 text-lg font-bold leading-tight text-[#0F172A] dark:text-white">
           {project.name || "Unbenannt"}
         </p>
-        <p className="mt-2 flex items-start gap-1.5 text-xs text-[#0A4D68]/70 dark:text-white/70">
-          <MapPin className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+        <p className="mt-2 flex items-start gap-1.5 text-xs text-[#0F172A]/65 dark:text-white/70">
+          <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
           {project.address}, {project.postalCode}
         </p>
       </div>
 
-      <Separator className="bg-[#0A4D68]/10" />
+      <Separator className="bg-[#0F172A]/10" />
 
-      <Card className="border-[#0A4D68]/10 shadow-none">
-        <CardHeader className="py-3 px-4">
-          <CardTitle className="text-xs text-[#088395]">Verbrauch</CardTitle>
+      <Card className="glass-card border-[#0F172A]/8 shadow-none">
+        <CardHeader className="px-4 py-3">
+          <CardTitle className="text-xs text-[#06B6D4]">Verbrauch</CardTitle>
         </CardHeader>
-        <CardContent className="px-4 pb-3 pt-0 text-sm space-y-1">
+        <CardContent className="space-y-1 px-4 pb-3 pt-0 text-sm">
           <p>
             Strom:{" "}
             <span className="font-medium">
@@ -60,26 +60,29 @@ export function DashboardProjectSidebar({
         </CardContent>
       </Card>
 
-      <Card className="border-[#0A4D68]/10 shadow-none">
-        <CardHeader className="py-3 px-4">
-          <CardTitle className="text-xs text-[#088395]">Technik-Mix</CardTitle>
+      <Card className="glass-card border-[#0F172A]/8 shadow-none">
+        <CardHeader className="px-4 py-3">
+          <CardTitle className="text-xs text-[#06B6D4]">Technik-Mix</CardTitle>
         </CardHeader>
         <CardContent className="px-4 pb-3 pt-0">
-          <p className="text-sm font-medium text-[#0A4D68] dark:text-white">
+          <p className="text-sm font-medium text-[#0F172A] dark:text-white">
             {techLabels.join(" · ") || "—"}
           </p>
           {result.sizing.pvKwp > 0 && (
-            <p className="text-xs text-[#0A4D68]/60 mt-2">
-              {result.sizing.pvKwp} kWp · {result.sizing.batteryKwh > 0 ? `${result.sizing.batteryKwh} kWh Speicher` : "ohne Speicher"}
+            <p className="mt-2 text-xs text-[#0F172A]/55">
+              {result.sizing.pvKwp} kWp ·{" "}
+              {result.sizing.batteryKwh > 0
+                ? `${result.sizing.batteryKwh} kWh Speicher`
+                : "ohne Speicher"}
             </p>
           )}
         </CardContent>
       </Card>
 
-      <div className="text-xs text-[#0A4D68]/50 space-y-1">
+      <div className="space-y-1 text-xs text-[#0F172A]/50">
         {WIZARD_STEPS.map((s) => (
           <p key={s.id} className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#00FFCA]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E]" />
             {s.short}
           </p>
         ))}
@@ -89,7 +92,7 @@ export function DashboardProjectSidebar({
         href="/wizard"
         variant="outline"
         size="sm"
-        className="w-full border-[#088395] text-[#0A4D68]"
+        className="w-full border-[#06B6D4] text-[#0F172A] dark:text-[#06B6D4]"
       >
         <Pencil className="mr-2 h-3.5 w-3.5" />
         Konzept bearbeiten

@@ -30,14 +30,14 @@ export function FormField({
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex items-center gap-1.5">
-        <Label htmlFor={htmlFor} className="text-[#0A4D68] dark:text-white">
+        <Label htmlFor={htmlFor} className="text-[#0F172A] dark:text-white">
           {label}
         </Label>
         {tooltip && (
           <Tooltip>
             <TooltipTrigger
               type="button"
-              className="text-[#088395] hover:text-[#0A4D68]"
+              className="text-[#06B6D4] hover:text-[#0F172A]"
               aria-label="Hilfe"
             >
               <HelpCircle className="h-3.5 w-3.5" />
@@ -50,7 +50,7 @@ export function FormField({
       </div>
       {children}
       {hint && !error && (
-        <p className="text-xs text-[#0A4D68]/50 dark:text-white/50">{hint}</p>
+        <p className="text-xs text-[#0F172A]/50 dark:text-white/50">{hint}</p>
       )}
       {error && (
         <p className="text-xs text-destructive font-medium">{error}</p>

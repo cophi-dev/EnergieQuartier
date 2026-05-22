@@ -36,10 +36,10 @@ export function Step1Building({ control, errors }: StepProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-[#0A4D68] dark:text-white">
+        <h2 className="text-xl font-semibold text-[#0F172A] dark:text-white">
           Projekt & Gebäude
         </h2>
-        <p className="mt-1 text-sm text-[#0A4D68]/60 dark:text-white/60">
+        <p className="mt-1 text-sm text-[#0F172A]/60 dark:text-white/60">
           Grunddaten für die Konzeptstudie und Verbrauchsschätzung.
         </p>
       </div>
@@ -58,7 +58,7 @@ export function Step1Building({ control, errors }: StepProps) {
               <Input
                 id="name"
                 placeholder="z. B. MFH Musterstraße – HEW Kunde"
-                className="w-full border-[#0A4D68]/20"
+                className="w-full border-[#0F172A]/20"
                 {...field}
               />
             )}
@@ -77,7 +77,7 @@ export function Step1Building({ control, errors }: StepProps) {
               <Input
                 id="address"
                 placeholder="Musterstraße 12"
-                className="w-full border-[#0A4D68]/20"
+                className="w-full border-[#0F172A]/20"
                 {...field}
               />
             )}
@@ -98,7 +98,7 @@ export function Step1Building({ control, errors }: StepProps) {
                 id="postalCode"
                 placeholder="20095"
                 maxLength={5}
-                className="w-full border-[#0A4D68]/20"
+                className="w-full border-[#0F172A]/20"
                 {...field}
               />
             )}
@@ -118,7 +118,7 @@ export function Step1Building({ control, errors }: StepProps) {
                 value={field.value}
                 onValueChange={field.onChange}
               >
-                <SelectTrigger className="w-full border-[#0A4D68]/20">
+                <SelectTrigger className="w-full border-[#0F172A]/20">
                   <SelectValue placeholder="Typ wählen" />
                 </SelectTrigger>
                 <SelectContent>
@@ -146,7 +146,7 @@ export function Step1Building({ control, errors }: StepProps) {
                 value={field.value}
                 onValueChange={field.onChange}
               >
-                <SelectTrigger className="w-full border-[#0A4D68]/20">
+                <SelectTrigger className="w-full border-[#0F172A]/20">
                   <SelectValue placeholder="Stand wählen" />
                 </SelectTrigger>
                 <SelectContent>
@@ -174,7 +174,7 @@ export function Step1Building({ control, errors }: StepProps) {
                 id="livingArea"
                 type="number"
                 min={20}
-                className="w-full border-[#0A4D68]/20"
+                className="w-full border-[#0F172A]/20"
                 {...field}
                 onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
               />
@@ -196,7 +196,7 @@ export function Step1Building({ control, errors }: StepProps) {
                 id="usableArea"
                 type="number"
                 min={0}
-                className="w-full border-[#0A4D68]/20"
+                className="w-full border-[#0F172A]/20"
                 {...field}
                 onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
               />
@@ -218,7 +218,7 @@ export function Step1Building({ control, errors }: StepProps) {
                 type="number"
                 min={1800}
                 max={new Date().getFullYear() + 2}
-                className="w-full border-[#0A4D68]/20"
+                className="w-full border-[#0F172A]/20"
                 {...field}
                 onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
               />

@@ -8,24 +8,24 @@ export interface SankeyNodeMeta {
   shortLabel: string;
 }
 
-/** Metadaten für Sankey-Knoten (Labels & Farben) */
+/** Metadaten für Sankey-Knoten (Labels & Farben) – Premium-Palette */
 export const SANKEY_NODE_META: Record<string, SankeyNodeMeta> = {
-  Netzstrom: { category: "strom", color: "#0A4D68", shortLabel: "Netz" },
-  "PV-Erzeugung": { category: "strom", color: "#088395", shortLabel: "PV" },
-  Batterie: { category: "strom", color: "#00FFCA", shortLabel: "Speicher" },
-  Strombedarf: { category: "strom", color: "#0A4D68", shortLabel: "Strombedarf" },
-  Einspeisung: { category: "strom", color: "#5eb8c9", shortLabel: "Einspeisung" },
+  Netzstrom: { category: "strom", color: "#0F172A", shortLabel: "Netz" },
+  "PV-Erzeugung": { category: "strom", color: "#06B6D4", shortLabel: "PV" },
+  Batterie: { category: "strom", color: "#22C55E", shortLabel: "Speicher" },
+  Strombedarf: { category: "strom", color: "#334155", shortLabel: "Strombedarf" },
+  Einspeisung: { category: "strom", color: "#0891B2", shortLabel: "Einspeisung" },
   "Gas/Wärme (Referenz)": {
     category: "waerme",
-    color: "#6b7280",
+    color: "#64748B",
     shortLabel: "Gas (Ref.)",
   },
-  Wärmepumpe: { category: "waerme", color: "#088395", shortLabel: "WP" },
-  Solarthermie: { category: "waerme", color: "#00FFCA", shortLabel: "Solarth." },
-  Wärmebedarf: { category: "waerme", color: "#0A4D68", shortLabel: "Wärmebedarf" },
+  Wärmepumpe: { category: "waerme", color: "#06B6D4", shortLabel: "WP" },
+  Solarthermie: { category: "waerme", color: "#22C55E", shortLabel: "Solarth." },
+  Wärmebedarf: { category: "waerme", color: "#0F172A", shortLabel: "Wärmebedarf" },
   "Kühlung (Neben)": {
     category: "kaelte",
-    color: "#94a3b8",
+    color: "#94A3B8",
     shortLabel: "Kühlung",
   },
 };
@@ -34,9 +34,9 @@ export const SANKEY_CATEGORY_LABELS: Record<
   SankeyCategory,
   { label: string; color: string }
 > = {
-  strom: { label: "Strom", color: "#0A4D68" },
-  waerme: { label: "Wärme", color: "#088395" },
-  kaelte: { label: "Kälte", color: "#94a3b8" },
+  strom: { label: "Strom", color: "#0F172A" },
+  waerme: { label: "Wärme", color: "#06B6D4" },
+  kaelte: { label: "Kälte", color: "#94A3B8" },
 };
 
 /** Entfernt ungenutzte Knoten und mappt Link-Indizes neu */
@@ -74,8 +74,18 @@ export function getNodeMeta(name: string): SankeyNodeMeta {
   return (
     SANKEY_NODE_META[name] ?? {
       category: "strom",
-      color: "#0A4D68",
+      color: "#0F172A",
       shortLabel: name.slice(0, 12),
     }
   );
+}
+
+/** Link-Farbe aus Quellknoten mit Transparenz */
+export function getLinkColor(sourceName: string, opacity = 0.35): string {
+  const meta = getNodeMeta(sourceName);
+  const hex = meta.color.replace("#", "");
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 }

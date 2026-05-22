@@ -5,25 +5,29 @@ import type { ProjectData } from "@/app/types/project";
 /** Feste ID für das HEW-Vorstellungsprojekt (idempotent in localStorage) */
 export const HEW_SHOWCASE_PROJECT_ID = "hew-showcase-2026";
 
+/** Kurzbeschreibung für UI-Banner */
+export const HEW_SHOWCASE_SUMMARY =
+  "12 WE · 850 m² · Baujahr 1998 · Kernsanierung 2022 · Hamburg-Hammerbrook";
+
 /**
  * Kuratiertes Demo-Objekt für Bewerbungsgespräche bei den Hamburger Energiewerken.
- * Werte sind bewusst stabil und erzählen eine überzeugende Geschichte.
+ * Realistisches Mehrfamilienhaus in Hamburg mit vollsaniertem Gebäudehülle (2022).
  */
 export function createHewShowcaseProject(): ProjectData {
   const now = new Date().toISOString();
   return {
     id: HEW_SHOWCASE_PROJECT_ID,
-    name: "MFH Elbchaussee – HEW Vertriebsdemo",
-    address: "Elbchaussee 42",
-    postalCode: "22763",
+    name: "MFH Hammerbrook – HEW Vertriebsdemo",
+    address: "Beim Strohhause 12",
+    postalCode: "20097",
     buildingType: "mehrfamilienhaus",
-    livingArea: 480,
-    usableArea: 120,
-    yearBuilt: 1968,
-    renovationStatus: "teilweise",
-    electricityKwh: 12500,
-    heatKwh: 72000,
-    priorities: { cost: 35, co2: 40, autarky: 25 },
+    livingArea: 850,
+    usableArea: 180,
+    yearBuilt: 1998,
+    renovationStatus: "vollständig",
+    electricityKwh: 34_200,
+    heatKwh: 58_500,
+    priorities: { cost: 30, co2: 45, autarky: 25 },
     technologies: {
       pv: true,
       heatPumpAir: true,
@@ -31,11 +35,13 @@ export function createHewShowcaseProject(): ProjectData {
       battery: true,
       solarThermal: true,
     },
-    budget: 185000,
-    targetPaybackYears: 14,
+    budget: 420_000,
+    targetPaybackYears: 16,
     notes:
-      "HEW-Vertriebsdemo: 6 WE, teilsaniert, PV auf Flachdach, Luft-WP im Innenhof, " +
-      "Solarthermie für WW. Kunde priorisiert CO₂-Reduktion bei kommunaler Förderung.",
+      "HEW-Vertriebsdemo: 12 Wohneinheiten, 850 m² Wohnfläche, Baujahr 1998, " +
+      "Kernsanierung 2022 (Fassade, Fenster, Heizungsvorbereitung). PV auf Flachdach, " +
+      "Luft-WP im Technikraum, Batteriespeicher + Solarthermie für WW. " +
+      "Kunde priorisiert CO₂-Reduktion im Rahmen der Hamburger Wärmewende.",
     createdAt: now,
     updatedAt: now,
   };

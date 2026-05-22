@@ -5,17 +5,19 @@ import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Calculator } from "lucide-react";
+import { ArrowLeft, ArrowRight, Calculator, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { WizardSidebar } from "@/app/components/wizard/WizardSidebar";
+import { WizardFormSkeleton } from "@/app/components/wizard/WizardFormSkeleton";
 import { Step1Building } from "@/app/components/wizard/steps/Step1Building";
 import { Step2Consumption } from "@/app/components/wizard/steps/Step2Consumption";
 import { Step3Priorities } from "@/app/components/wizard/steps/Step3Priorities";
 import { Step4Technology } from "@/app/components/wizard/steps/Step4Technology";
 import { Step5Details } from "@/app/components/wizard/steps/Step5Details";
 import { WIZARD_STEPS } from "@/app/lib/constants";
+import { createHewShowcaseProject, HEW_SHOWCASE_SUMMARY } from "@/app/lib/demo-project";
 import {
   normalizePriorities,
   WIZARD_STEP_FIELDS,
@@ -62,11 +64,12 @@ function formValuesToProject(
 
 export function WizardForm() {
   const router = useRouter();
-  const { currentProject, setCurrentProject, saveCurrentProject } =
+  const { currentProject, setCurrentProject, saveCurrentProject, loadShowcaseProject } =
     useProjectStore();
   const [step, setStep] = useState(1);
   const [maxReachedStep, setMaxReachedStep] = useState(1);
   const [hydrated, setHydrated] = useState(false);
+  const [demoLoaded, setDemoLoaded] = useState(false);
 
   const form = useForm<WizardFormValues>({
     resolver: zodResolver(wizardFormSchema),
@@ -91,7 +94,6 @@ export function WizardForm() {
     if (hydrated) {
       reset(projectToFormValues(currentProject));
     }
-    // Nur beim ersten Laden / Projektwechsel synchronisieren
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated, currentProject.id]);
 
@@ -110,6 +112,16 @@ export function WizardForm() {
       formValuesToProject(values, currentProject) as Partial<ProjectData>,
     );
   }, [getValues, setCurrentProject, currentProject]);
+
+  const loadDemoProject = useCallback(() => {
+    loadShowcaseProject();
+    const demo = createHewShowcaseProject();
+    reset(projectToFormValues(demo));
+    setCurrentProject(demo);
+    setStep(1);
+    setMaxReachedStep(TOTAL_STEPS);
+    setDemoLoaded(true);
+  }, [loadShowcaseProject, reset, setCurrentProject]);
 
   const goToStep = async (target: number) => {
     if (target > step) {
@@ -193,11 +205,7 @@ export function WizardForm() {
   };
 
   if (!hydrated) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center text-[#0A4D68]">
-        Konfigurator wird geladen …
-      </div>
-    );
+    return <WizardFormSkeleton />;
   }
 
   return (
@@ -206,12 +214,12 @@ export function WizardForm() {
         currentStep={step}
         maxReachedStep={maxReachedStep}
         onStepClick={(s) => void goToStep(s)}
+        onLoadDemo={loadDemoProject}
       />
 
       <div className="flex flex-1 flex-col">
-        {/* Mobile Progress */}
-        <div className="lg:hidden border-b border-[#0A4D68]/10 bg-white px-4 py-3 dark:bg-[#0A4D68]/30">
-          <div className="flex justify-between text-xs text-[#088395] mb-2">
+        <div className="border-b border-[#0F172A]/8 glass px-4 py-3 lg:hidden">
+          <div className="mb-2 flex justify-between text-xs text-[#06B6D4]">
             <span>
               Schritt {step}/{TOTAL_STEPS}
             </span>
@@ -220,12 +228,20 @@ export function WizardForm() {
           <Progress value={progressPercent} className="h-2" />
         </div>
 
-        <form
-          onSubmit={onCalculate}
-          className="flex flex-1 flex-col"
-        >
+        {demoLoaded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            className="border-b border-[#22C55E]/20 bg-[#22C55E]/8 px-4 py-2.5 text-sm text-[#0F172A] dark:text-white"
+          >
+            <span className="font-medium text-[#22C55E]">Demo geladen:</span>{" "}
+            {HEW_SHOWCASE_SUMMARY} – alle Schritte sind vorausgefüllt.
+          </motion.div>
+        )}
+
+        <form onSubmit={onCalculate} className="flex flex-1 flex-col">
           <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-            <Card className="max-w-3xl mx-auto border-[#0A4D68]/10 shadow-sm">
+            <Card className="glass-card mx-auto max-w-3xl border-[#0F172A]/8 shadow-sm">
               <CardContent className="pt-6">
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -242,37 +258,49 @@ export function WizardForm() {
             </Card>
           </div>
 
-          <div className="sticky bottom-0 border-t border-[#0A4D68]/10 bg-white/95 backdrop-blur px-4 py-4 sm:px-6 dark:bg-[#0A4D68]/90">
+          <div className="sticky bottom-0 border-t border-[#0F172A]/8 glass px-4 py-4 sm:px-6">
             <div className="mx-auto flex max-w-3xl items-center justify-between gap-4">
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleBack}
                 disabled={step === 1}
-                className="border-[#0A4D68]/20 text-[#0A4D68]"
+                className="border-[#0F172A]/15 text-[#0F172A] dark:text-white"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Zurück
               </Button>
 
-              {step < TOTAL_STEPS ? (
+              <div className="flex items-center gap-2">
                 <Button
                   type="button"
-                  onClick={() => void handleNext()}
-                  className="bg-[#088395] hover:bg-[#0A4D68] text-white"
+                  variant="outline"
+                  onClick={loadDemoProject}
+                  className="hidden border-[#06B6D4] text-[#0F172A] hover:bg-[#06B6D4]/10 sm:inline-flex dark:text-[#06B6D4]"
                 >
-                  Weiter
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <Play className="mr-2 h-4 w-4 fill-current" />
+                  Demo laden
                 </Button>
-              ) : (
-                <Button
-                  type="submit"
-                  className="bg-[#0A4D68] hover:bg-[#088395] text-white"
-                >
-                  <Calculator className="mr-2 h-4 w-4" />
-                  Berechnen
-                </Button>
-              )}
+
+                {step < TOTAL_STEPS ? (
+                  <Button
+                    type="button"
+                    onClick={() => void handleNext()}
+                    className="bg-[#06B6D4] text-[#0F172A] hover:bg-[#22C55E]"
+                  >
+                    Weiter
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    className="bg-[#0F172A] text-white hover:bg-[#06B6D4] hover:text-[#0F172A]"
+                  >
+                    <Calculator className="mr-2 h-4 w-4" />
+                    Berechnen
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </form>

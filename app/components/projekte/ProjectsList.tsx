@@ -30,6 +30,7 @@ import { Badge } from "@/components/ui/badge";
 import { calculateProject } from "@/app/lib/calculations";
 import { HEW_SHOWCASE_PROJECT_ID } from "@/app/lib/demo-project";
 import { useProjectStore } from "@/lib/store";
+import { Skeleton } from "@/app/components/wizard/WizardFormSkeleton";
 import type { ProjectData } from "@/app/types/project";
 
 function formatDate(iso: string): string {
@@ -100,8 +101,11 @@ export function ProjectsList() {
 
   if (!hydrated) {
     return (
-      <div className="flex min-h-[40vh] items-center justify-center text-[#0A4D68]">
-        Projekte werden geladen …
+      <div className="mx-auto max-w-4xl space-y-4 px-4 py-10 sm:px-6 lg:px-8">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-4 w-64" />
+        <Skeleton className="mt-6 h-40 w-full rounded-xl" />
+        <Skeleton className="h-40 w-full rounded-xl" />
       </div>
     );
   }
@@ -110,10 +114,10 @@ export function ProjectsList() {
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-[#0A4D68] dark:text-white">
+          <h1 className="font-heading text-2xl font-bold text-[#0F172A] dark:text-white">
             Meine Projekte
           </h1>
-          <p className="mt-1 text-sm text-[#0A4D68]/60 dark:text-white/60">
+          <p className="mt-1 text-sm text-[#0F172A]/60 dark:text-white/60">
             Gespeicherte Konzeptstudien · localStorage
           </p>
         </div>
@@ -124,13 +128,13 @@ export function ProjectsList() {
               loadShowcaseProject();
               router.push("/dashboard");
             }}
-            className="border-[#0A4D68] text-[#0A4D68]"
+            className="border-[#06B6D4] text-[#0F172A] dark:text-[#06B6D4]"
           >
-            HEW-Demo
+            Demo Projekt laden
           </Button>
           <Button
             onClick={handleNewProject}
-            className="bg-[#088395] hover:bg-[#0A4D68] text-white"
+            className="bg-[#06B6D4] text-[#0F172A] hover:bg-[#22C55E]"
           >
             <Plus className="mr-2 h-4 w-4" />
             Neues Projekt
@@ -139,19 +143,19 @@ export function ProjectsList() {
       </div>
 
       {sorted.length === 0 ? (
-        <Card className="border-[#0A4D68]/10 border-dashed">
+        <Card className="glass-card border-dashed border-[#0F172A]/15">
           <CardContent className="flex flex-col items-center py-16 text-center">
-            <BarChart3 className="h-12 w-12 text-[#088395]/40 mb-4" />
-            <p className="text-lg font-medium text-[#0A4D68] dark:text-white">
+            <BarChart3 className="h-12 w-12 text-[#06B6D4]/40 mb-4" />
+            <p className="text-lg font-medium text-[#0F172A] dark:text-white">
               Noch keine Projekte gespeichert
             </p>
-            <p className="mt-2 max-w-sm text-sm text-[#0A4D68]/60">
+            <p className="mt-2 max-w-sm text-sm text-[#0F172A]/60">
               Starten Sie den Konfigurator und klicken Sie am Ende auf
               „Berechnen“ – das Projekt erscheint hier automatisch.
             </p>
             <ButtonLink
               href="/wizard"
-              className="mt-6 bg-[#0A4D68] text-white"
+              className="mt-6 bg-[#0F172A] text-white hover:bg-[#06B6D4] hover:text-[#0F172A]"
             >
               Erstes Projekt starten
             </ButtonLink>
@@ -170,14 +174,14 @@ export function ProjectsList() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Card className="border-[#0A4D68]/10 hover:border-[#088395]/40 hover:shadow-md transition-all">
+                <Card className="gradient-border glass-card border-[#0F172A]/8 transition-all hover:border-[#06B6D4]/30 hover:shadow-lg hover:shadow-[#06B6D4]/10">
                   <CardHeader className="pb-2">
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                       <div>
-                        <CardTitle className="text-[#0A4D68] dark:text-white flex items-center gap-2">
+                        <CardTitle className="text-[#0F172A] dark:text-white flex items-center gap-2">
                           {project.name}
                           {project.id === HEW_SHOWCASE_PROJECT_ID && (
-                            <Badge className="bg-[#00FFCA]/30 text-[#0A4D68] text-[10px]">
+                            <Badge className="bg-[#22C55E]/15 text-[#22C55E] text-[10px]">
                               HEW-Demo
                             </Badge>
                           )}
@@ -192,7 +196,7 @@ export function ProjectsList() {
                           <Badge
                             key={b}
                             variant="secondary"
-                            className="bg-[#088395]/15 text-[#0A4D68]"
+                            className="bg-[#06B6D4]/15 text-[#0F172A]"
                           >
                             {b}
                           </Badge>
@@ -203,33 +207,33 @@ export function ProjectsList() {
                   <CardContent>
                     <div className="grid gap-4 sm:grid-cols-4 text-sm mb-4">
                       <div>
-                        <p className="text-xs text-[#088395]">Amortisation</p>
-                        <p className="font-semibold text-[#0A4D68] dark:text-[#00FFCA]">
+                        <p className="text-xs text-[#06B6D4]">Amortisation</p>
+                        <p className="font-semibold text-[#0F172A] dark:text-[#06B6D4]">
                           {result.economics.paybackYears} J.
                         </p>
                       </div>
                       <div>
-                        <p className="text-xs text-[#088395]">NPV (20 J.)</p>
-                        <p className="font-semibold text-[#0A4D68] dark:text-[#00FFCA]">
+                        <p className="text-xs text-[#06B6D4]">NPV (20 J.)</p>
+                        <p className="font-semibold text-[#0F172A] dark:text-[#06B6D4]">
                           {result.economics.npvEur.toLocaleString("de-DE")} €
                         </p>
                       </div>
                       <div>
-                        <p className="text-xs text-[#088395]">CO₂-Einsparung</p>
-                        <p className="font-semibold text-[#0A4D68] dark:text-[#00FFCA]">
+                        <p className="text-xs text-[#06B6D4]">CO₂-Einsparung</p>
+                        <p className="font-semibold text-[#0F172A] dark:text-[#06B6D4]">
                           {(result.environment.co2SavingsKg / 1000).toFixed(1)}{" "}
                           t/a
                         </p>
                       </div>
                       <div>
-                        <p className="text-xs text-[#088395]">Autarkie</p>
-                        <p className="font-semibold text-[#0A4D68] dark:text-[#00FFCA]">
+                        <p className="text-xs text-[#06B6D4]">Autarkie</p>
+                        <p className="font-semibold text-[#0F172A] dark:text-[#06B6D4]">
                           {result.annual.autarkyPercent} %
                         </p>
                       </div>
                     </div>
 
-                    <p className="flex items-center gap-1.5 text-xs text-[#0A4D68]/50 mb-4">
+                    <p className="flex items-center gap-1.5 text-xs text-[#0F172A]/50 mb-4">
                       <Calendar className="h-3 w-3" />
                       Zuletzt bearbeitet: {formatDate(project.updatedAt)}
                     </p>
@@ -237,7 +241,7 @@ export function ProjectsList() {
                     <div className="flex flex-wrap gap-2">
                       <Button
                         size="sm"
-                        className="bg-[#0A4D68] hover:bg-[#088395] text-white"
+                        className="bg-[#0F172A] text-white hover:bg-[#06B6D4] hover:text-[#0F172A]"
                         onClick={() => handleOpen(project.id)}
                       >
                         Dashboard öffnen
@@ -245,7 +249,7 @@ export function ProjectsList() {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="border-[#088395] text-[#0A4D68]"
+                        className="border-[#06B6D4] text-[#0F172A]"
                         onClick={() => handleEdit(project.id)}
                       >
                         Bearbeiten
@@ -274,7 +278,7 @@ export function ProjectsList() {
       >
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-[#0A4D68]">Projekt löschen?</DialogTitle>
+            <DialogTitle className="text-[#0F172A]">Projekt löschen?</DialogTitle>
             <DialogDescription>
               Dieser Eintrag wird dauerhaft aus dem lokalen Speicher entfernt.
               Die Aktion kann nicht rückgängig gemacht werden.

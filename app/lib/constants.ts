@@ -8,6 +8,19 @@ export const BRAND = {
     green: "#22C55E",
     background: "#F8FAFC",
   },
+  pdf: {
+    footerNote:
+      "Showcase für die Bewerbung als Projektingenieur Vertrieb · Hamburger Energiewerken",
+  },
+} as const;
+
+/** Chart-Farben (Recharts) */
+export const CHART_COLORS = {
+  primary: BRAND.colors.primary,
+  cyan: BRAND.colors.cyan,
+  green: BRAND.colors.green,
+  grid: `${BRAND.colors.primary}1A`,
+  tick: BRAND.colors.primary,
 } as const;
 
 export const NAV_ITEMS = [

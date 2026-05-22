@@ -45,10 +45,10 @@ export function Step2Consumption({ control, errors, setValue }: StepProps) {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-[#0A4D68] dark:text-white">
+          <h2 className="text-xl font-semibold text-[#0F172A] dark:text-white">
             Energieverbrauch
           </h2>
-          <p className="mt-1 text-sm text-[#0A4D68]/60 dark:text-white/60">
+          <p className="mt-1 text-sm text-[#0F172A]/60 dark:text-white/60">
             Jahresverbräuche Strom und Wärme – Basis für Dimensionierung.
           </p>
         </div>
@@ -56,7 +56,7 @@ export function Step2Consumption({ control, errors, setValue }: StepProps) {
           type="button"
           variant="outline"
           onClick={handleEstimate}
-          className="shrink-0 border-[#088395] text-[#0A4D68] hover:bg-[#088395]/10"
+          className="shrink-0 border-[#06B6D4] text-[#0F172A] hover:bg-[#06B6D4]/10"
         >
           <Calculator className="mr-2 h-4 w-4" />
           Verbrauch schätzen
@@ -78,7 +78,7 @@ export function Step2Consumption({ control, errors, setValue }: StepProps) {
                 id="electricityKwh"
                 type="number"
                 min={500}
-                className="w-full border-[#0A4D68]/20"
+                className="w-full border-[#0F172A]/20"
                 {...field}
                 onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
               />
@@ -100,7 +100,7 @@ export function Step2Consumption({ control, errors, setValue }: StepProps) {
                 id="heatKwh"
                 type="number"
                 min={1000}
-                className="w-full border-[#0A4D68]/20"
+                className="w-full border-[#0F172A]/20"
                 {...field}
                 onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
               />
@@ -109,7 +109,7 @@ export function Step2Consumption({ control, errors, setValue }: StepProps) {
         </FormField>
       </div>
 
-      <p className="rounded-lg bg-[#088395]/10 px-4 py-3 text-sm text-[#0A4D68]/80 dark:text-white/80">
+      <p className="rounded-lg bg-[#06B6D4]/10 px-4 py-3 text-sm text-[#0F172A]/80 dark:text-white/80">
         Die Schätzung nutzt Gebäudetyp, Fläche, Baujahr und Sanierungsstand –
         typische Werte für Hamburger Bestandsgebäude.
       </p>

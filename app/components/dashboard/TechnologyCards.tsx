@@ -26,7 +26,7 @@ interface TechnologyCardsProps {
 export function TechnologyCards({ details }: TechnologyCardsProps) {
   if (details.length === 0) {
     return (
-      <p className="text-sm text-[#0A4D68]/60">
+      <p className="text-sm text-[#0F172A]/55">
         Keine Technologien ausgewählt.
       </p>
     );
@@ -42,17 +42,18 @@ export function TechnologyCards({ details }: TechnologyCardsProps) {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.06 }}
+            whileHover={{ y: -3, scale: 1.01 }}
           >
-            <Card className="h-full border-[#0A4D68]/10">
+            <Card className="gradient-border glass-card h-full border-[#0F172A]/8">
               <CardHeader className="flex flex-row items-center gap-3 pb-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#0A4D68] text-[#00FFCA]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-[#0F172A] to-[#06B6D4] text-white">
                   <Icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <CardTitle className="text-base text-[#0A4D68] dark:text-white">
+                  <CardTitle className="text-base text-[#0F172A] dark:text-white">
                     {tech.name}
                   </CardTitle>
-                  <p className="text-xs text-[#088395]">{tech.headline}</p>
+                  <p className="text-xs text-[#06B6D4]">{tech.headline}</p>
                 </div>
               </CardHeader>
               <CardContent>
@@ -62,8 +63,8 @@ export function TechnologyCards({ details }: TechnologyCardsProps) {
                       key={spec.label}
                       className="flex justify-between text-sm"
                     >
-                      <dt className="text-[#0A4D68]/60">{spec.label}</dt>
-                      <dd className="font-medium text-[#0A4D68] dark:text-white">
+                      <dt className="text-[#0F172A]/55">{spec.label}</dt>
+                      <dd className="font-medium text-[#0F172A] dark:text-white">
                         {spec.value}
                       </dd>
                     </div>

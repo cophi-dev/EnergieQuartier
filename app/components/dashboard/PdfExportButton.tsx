@@ -42,7 +42,7 @@ export function PdfExportButton({
   const button = (
     <Button
       variant="outline"
-      className="border-[#0A4D68]/20 text-[#0A4D68]"
+      className="border-[#0F172A]/15 text-[#0F172A] hover:bg-[#06B6D4]/10 dark:text-white"
       disabled={disabled || loading}
       onClick={() => void handleExport()}
     >
