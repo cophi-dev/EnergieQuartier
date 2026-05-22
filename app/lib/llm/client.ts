@@ -21,7 +21,7 @@ function sanitizeLlmOutput(text: string, maxLength: number): string {
 }
 
 const MAX_OUTPUT: Record<AdvisorTextSlot, number> = {
-  "co2-comparison": 320,
+  "co2-comparison": 420,
   "personal-summary": 480,
   "next-steps": 600,
   "technology-explanation": 420,
@@ -60,8 +60,8 @@ export async function generateAdvisorText(
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
         ],
-        temperature: 0.55,
-        max_tokens: 280,
+        temperature: slot === "co2-comparison" ? 0.65 : 0.55,
+        max_tokens: slot === "co2-comparison" ? 320 : 280,
       }),
       signal: AbortSignal.timeout(config.timeoutMs),
     });

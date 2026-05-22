@@ -11,22 +11,19 @@ import type {
 export async function fetchAdvisorText(
   slot: AdvisorTextSlot,
   context: AdvisorContext,
-  forceRefresh = false,
 ): Promise<{ text: string; source: "llm" | "fallback" | "cache" }> {
   const cacheKey = buildAdvisorCacheKey(slot, context);
+  const cached = getAdvisorCache(slot, cacheKey);
 
-  if (!forceRefresh) {
-    const cached = getAdvisorCache(slot, cacheKey);
-    if (cached) {
-      return { text: cached.text, source: "cache" };
-    }
+  if (cached) {
+    return { text: cached.text, source: "cache" };
   }
 
   try {
     const response = await fetch("/api/grok", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slot, cacheKey, context, forceRefresh }),
+      body: JSON.stringify({ slot, cacheKey, context }),
     });
 
     if (!response.ok) {

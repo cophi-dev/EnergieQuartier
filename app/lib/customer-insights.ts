@@ -1,4 +1,5 @@
 import { formatScenarioTechLabels } from "@/app/lib/scenarios";
+import { pickCo2AnalogySentence } from "@/app/lib/co2-analogies";
 import type { CalculationResult } from "@/app/types/calculation";
 import type { ProjectData } from "@/app/types/project";
 
@@ -113,7 +114,7 @@ export function buildCustomerInsights(
     co2Paragraphs: [
       `Heute verursacht Ihr Gebäude etwa ${co2Before} Tonnen CO₂ pro Jahr durch Strom- und Wärmeverbrauch.`,
       `Mit dem gewählten Konzept sinkt das auf rund ${co2After} Tonnen – Sie sparen ${co2Saved} Tonnen CO₂ jährlich (ca. ${co2ReductionPct} % weniger).`,
-      `Das entspricht grob ${Math.round(Number(co2Saved) * 4)} Autobahn-Kilometern weniger Emissionen pro Jahr – ein spürbarer Beitrag zur Wärmewende in Hamburg.`,
+      pickCo2AnalogySentence(result.environment.co2SavingsKg),
     ],
     co2Highlights: [
       { label: "Vorher", value: `${co2Before} t/a` },

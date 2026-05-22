@@ -1,4 +1,8 @@
 import { formatScenarioTechLabels } from "@/app/lib/scenarios";
+import {
+  formatCo2AnalogiesForPrompt,
+  pickCo2AnalogySentence,
+} from "@/app/lib/co2-analogies";
 import type { AdvisorContext } from "@/app/types/advisor-text";
 import type { CalculationResult } from "@/app/types/calculation";
 import type { ProjectData } from "@/app/types/project";
@@ -59,6 +63,7 @@ export function formatAdvisorContextForPrompt(ctx: AdvisorContext): string {
     `Prioritäten (Kosten/CO₂/Autarkie): ${project.priorities.cost}/${project.priorities.co2}/${project.priorities.autarky}`,
     `Autarkie: ${result.annual.autarkyPercent} %`,
     `CO₂ vorher: ${co2Before} t/a · nachher: ${co2After} t/a · Einsparung: ${co2Saved} t/a (${co2Pct} %)`,
+    `Alltagsvergleiche für die Einsparung: ${formatCo2AnalogiesForPrompt(result.environment.co2SavingsKg)}`,
     `Investition netto: ${result.investment.net.toLocaleString("de-DE")} €`,
     `Jährliche Einsparung: ${result.economics.annualSavingsEur.toLocaleString("de-DE")} €`,
     `Amortisation: ${result.economics.paybackYears} Jahre (Ziel: ${project.targetPaybackYears})`,

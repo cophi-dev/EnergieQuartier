@@ -11,6 +11,9 @@ function techFingerprint(ctx: AdvisorContext): string {
   ].join("");
 }
 
+/** Bei Prompt-/Fallback-Änderungen erhöhen, damit alte Texte im Browser-Cache verfallen */
+const ADVISOR_CACHE_VERSION = "v2";
+
 /** Stabiler Cache-Key – ändert sich bei relevanten Projekt-/Ergebnis-Updates */
 export function buildAdvisorCacheKey(
   slot: AdvisorTextSlot,
@@ -18,6 +21,7 @@ export function buildAdvisorCacheKey(
 ): string {
   const { project, result } = ctx;
   const base = [
+    ADVISOR_CACHE_VERSION,
     slot,
     project.id,
     project.updatedAt,

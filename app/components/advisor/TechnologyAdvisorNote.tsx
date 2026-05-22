@@ -36,7 +36,7 @@ export function TechnologyAdvisorNote({
     [project, result, technologyId, technologyName],
   );
   const cacheKey = buildAdvisorCacheKey("technology-explanation", context);
-  const { text, status, source, regenerate } = useAdvisorText({
+  const { text, status, source } = useAdvisorText({
     slot: "technology-explanation",
     cacheKey,
     context,
@@ -56,7 +56,6 @@ export function TechnologyAdvisorNote({
       <AdvisorTextBlock
         text={text}
         status={status}
-        onRegenerate={regenerate}
         isInitialLoad={status === "loading" && source === null}
       />
     </div>

@@ -28,7 +28,7 @@ export function CustomerCo2Section({
     [project, result],
   );
   const cacheKey = buildAdvisorCacheKey("co2-comparison", context);
-  const { text, status, source, regenerate } = useAdvisorText({
+  const { text, status, source } = useAdvisorText({
     slot: "co2-comparison",
     cacheKey,
     context,
@@ -70,7 +70,6 @@ export function CustomerCo2Section({
           <AdvisorTextBlock
             text={text}
             status={status}
-            onRegenerate={regenerate}
             isInitialLoad={status === "loading" && source === null}
           />
         </CardContent>

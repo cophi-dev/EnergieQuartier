@@ -2,14 +2,8 @@
 
 import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, ListChecks, Loader2, RotateCw } from "lucide-react";
+import { ArrowRight, ListChecks } from "lucide-react";
 import { ButtonLink } from "@/app/components/ui/ButtonLink";
-import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useAdvisorText } from "@/app/hooks/useAdvisorText";
 import { buildAdvisorCacheKey } from "@/app/lib/llm/cache-key";
 import { buildAdvisorContext } from "@/app/lib/llm/context";
@@ -29,7 +23,7 @@ export function NextStepsSection({ project, result }: NextStepsSectionProps) {
     [project, result],
   );
   const cacheKey = buildAdvisorCacheKey("next-steps", context);
-  const { text, status, source, regenerate } = useAdvisorText({
+  const { text, status, source } = useAdvisorText({
     slot: "next-steps",
     cacheKey,
     context,
@@ -46,39 +40,13 @@ export function NextStepsSection({ project, result }: NextStepsSectionProps) {
     >
       <Card className="glass-card border-[#0F172A]/8">
         <CardHeader>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <CardTitle className="flex items-center gap-2 text-lg text-[#0F172A] dark:text-white">
-                <ListChecks className="h-5 w-5 text-[#06B6D4]" />
-                Nächste Schritte
-              </CardTitle>
-              <p className="mt-1 text-sm text-[#0F172A]/55 dark:text-white/55">
-                Konkrete Handlungsempfehlungen für Ihr Projekt
-              </p>
-            </div>
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    className="h-7 w-7 text-[#0F172A]/35 hover:text-[#06B6D4] dark:text-white/35"
-                    onClick={regenerate}
-                    disabled={status === "loading"}
-                    aria-label="Schritte neu formulieren"
-                  />
-                }
-              >
-                {status === "loading" ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <RotateCw className="h-3.5 w-3.5" />
-                )}
-              </TooltipTrigger>
-              <TooltipContent>Schritte neu formulieren</TooltipContent>
-            </Tooltip>
-          </div>
+          <CardTitle className="flex items-center gap-2 text-lg text-[#0F172A] dark:text-white">
+            <ListChecks className="h-5 w-5 text-[#06B6D4]" />
+            Nächste Schritte
+          </CardTitle>
+          <p className="mt-1 text-sm text-[#0F172A]/55 dark:text-white/55">
+            Konkrete Handlungsempfehlungen für Ihr Projekt
+          </p>
         </CardHeader>
         <CardContent>
           {loading ? (

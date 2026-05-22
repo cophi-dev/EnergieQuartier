@@ -2,11 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getAdvisorFallbackText } from "@/app/lib/llm/fallbacks";
-import {
-  clearAdvisorCache,
-  getAdvisorCache,
-  setAdvisorCache,
-} from "@/app/lib/advisor-cache";
+import { getAdvisorCache, setAdvisorCache } from "@/app/lib/advisor-cache";
 import type {
   AdvisorContext,
   AdvisorTextResponse,
@@ -26,7 +22,6 @@ interface UseAdvisorTextResult {
   text: string;
   status: AdvisorTextStatus;
   source: "llm" | "fallback" | "cache" | null;
-  regenerate: () => void;
 }
 
 export function useAdvisorText({
@@ -48,20 +43,15 @@ export function useAdvisorText({
   );
   const abortRef = useRef<AbortController | null>(null);
 
-  const fetchText = useCallback(
-    async (forceRefresh: boolean) => {
+  const fetchText = useCallback(async () => {
       if (!enabled) return;
 
-      if (!forceRefresh) {
-        const cached = getAdvisorCache(slot, cacheKey);
-        if (cached) {
-          setText(cached.text);
-          setSource("cache");
-          setStatus("ready");
-          return;
-        }
-      } else {
-        clearAdvisorCache(slot, cacheKey);
+      const cached = getAdvisorCache(slot, cacheKey);
+      if (cached) {
+        setText(cached.text);
+        setSource("cache");
+        setStatus("ready");
+        return;
       }
 
       abortRef.current?.abort();
@@ -78,7 +68,6 @@ export function useAdvisorText({
             slot,
             cacheKey,
             context: contextRef.current,
-            forceRefresh,
           }),
           signal: controller.signal,
         });
@@ -113,18 +102,12 @@ export function useAdvisorText({
           createdAt: new Date().toISOString(),
         });
       }
-    },
-    [slot, cacheKey, enabled, fallback],
-  );
+    }, [slot, cacheKey, enabled, fallback]);
 
   useEffect(() => {
-    void fetchText(false);
+    void fetchText();
     return () => abortRef.current?.abort();
   }, [fetchText]);
 
-  const regenerate = useCallback(() => {
-    void fetchText(true);
-  }, [fetchText]);
-
-  return { text, status, source, regenerate };
+  return { text, status, source };
 }

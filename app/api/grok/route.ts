@@ -82,7 +82,6 @@ const requestSchema = z.object({
   ]),
   cacheKey: z.string().min(8),
   context: advisorContextSchema,
-  forceRefresh: z.boolean().optional(),
 });
 
 export async function POST(request: Request): Promise<Response> {

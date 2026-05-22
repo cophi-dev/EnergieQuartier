@@ -39,7 +39,6 @@ export interface AdvisorTextRequest {
   slot: AdvisorTextSlot;
   cacheKey: string;
   context: AdvisorContext;
-  forceRefresh?: boolean;
 }
 
 export interface AdvisorTextResponse {

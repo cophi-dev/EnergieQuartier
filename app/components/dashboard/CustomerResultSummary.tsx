@@ -28,7 +28,7 @@ export function CustomerResultSummary({
     [project, result],
   );
   const cacheKey = buildAdvisorCacheKey("personal-summary", context);
-  const { text, status, source, regenerate } = useAdvisorText({
+  const { text, status, source } = useAdvisorText({
     slot: "personal-summary",
     cacheKey,
     context,
@@ -65,7 +65,6 @@ export function CustomerResultSummary({
             <AdvisorTextBlock
               text={text}
               status={status}
-              onRegenerate={regenerate}
               isInitialLoad={status === "loading" && source === null}
             />
           </div>

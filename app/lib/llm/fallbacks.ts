@@ -1,4 +1,5 @@
 import { formatScenarioTechLabels } from "@/app/lib/scenarios";
+import { pickCo2AnalogySentence } from "@/app/lib/co2-analogies";
 import type { AdvisorContext, AdvisorTextSlot } from "@/app/types/advisor-text";
 
 const BUILDING_LABELS: Record<
@@ -30,8 +31,10 @@ export function getAdvisorFallbackText(
   const building = BUILDING_LABELS[project.buildingType];
 
   switch (slot) {
-    case "co2-comparison":
-      return `Heute verursacht Ihr ${building} etwa ${co2Before} Tonnen CO₂ pro Jahr. Mit ${tech} sinkt das auf rund ${co2After} Tonnen – das sind ${co2Saved} Tonnen weniger (${co2Pct} %), ein spürbarer Schritt für Klima und Wärmewende in Hamburg.`;
+    case "co2-comparison": {
+      const analogy = pickCo2AnalogySentence(result.environment.co2SavingsKg);
+      return `Heute verursacht Ihr ${building} etwa ${co2Before} Tonnen CO₂ pro Jahr. Mit ${tech} sinkt das auf rund ${co2After} Tonnen – ${co2Saved} Tonnen weniger (${co2Pct} %). ${analogy}`;
+    }
 
     case "personal-summary":
       return `Ihr Konzept mit ${tech} passt gut zu einem ${building} in ${project.postalCode}: Sie senken laufende Energiekosten und werden unabhängiger vom Netz (Autarkie ca. ${result.annual.autarkyPercent} %). Damit haben Sie eine solide Basis für die Entscheidung – ob Sanierung, Vermietung oder Verkauf.`;
