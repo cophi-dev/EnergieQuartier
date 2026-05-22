@@ -60,6 +60,35 @@ describe("calculateProject", () => {
     }
   });
 
+  it("führt WP-Strom über Strombedarf statt direkt vom Netz", () => {
+    const result = calculateProject(createShowcaseProject());
+    const nodeName = (index: number) => result.sankey.nodes[index]?.name ?? "";
+
+    const loadToHp = result.sankey.links.find(
+      (link) =>
+        nodeName(link.source) === "Strombedarf" &&
+        nodeName(link.target) === "Wärmepumpe",
+    );
+    const gridToHp = result.sankey.links.find(
+      (link) =>
+        nodeName(link.source) === "Netzstrom" &&
+        nodeName(link.target) === "Wärmepumpe",
+    );
+
+    expect(loadToHp?.value).toBe(result.annual.heatPumpElectricityKwh);
+    expect(gridToHp).toBeUndefined();
+
+    const loadIndex = result.sankey.nodes.findIndex((n) => n.name === "Strombedarf");
+    const inflow = result.sankey.links
+      .filter((link) => link.target === loadIndex)
+      .reduce((sum, link) => sum + link.value, 0);
+    const outflow = result.sankey.links
+      .filter((link) => link.source === loadIndex)
+      .reduce((sum, link) => sum + link.value, 0);
+
+    expect(inflow).toBe(outflow);
+  });
+
   it("Cashflow startet mit negativer Investition in Jahr 0", () => {
     const result = calculateProject(createShowcaseProject());
     expect(result.cashflowYears[0].year).toBe(0);
@@ -67,11 +96,11 @@ describe("calculateProject", () => {
     expect(result.cashflowYears).toHaveLength(21);
   });
 
-  it("Batterie erhöht Eigenverbrauch gegenüber PV-only", () => {
+  it("Batterie reduziert Einspeisung gegenüber PV-only", () => {
     const base = baseProject({
       technologies: {
         pv: true,
-        heatPumpAir: false,
+        heatPumpAir: true,
         heatPumpGround: false,
         battery: false,
         solarThermal: false,
@@ -80,15 +109,18 @@ describe("calculateProject", () => {
     const withBattery = baseProject({
       technologies: {
         pv: true,
-        heatPumpAir: false,
+        heatPumpAir: true,
         heatPumpGround: false,
         battery: true,
         solarThermal: false,
       },
     });
+
     const pvOnly = calculateProject(base);
     const pvBattery = calculateProject(withBattery);
-    expect(pvBattery.annual.selfConsumptionKwh).toBeGreaterThanOrEqual(
+
+    expect(pvBattery.annual.gridExportKwh).toBeLessThan(pvOnly.annual.gridExportKwh);
+    expect(pvBattery.annual.selfConsumptionKwh).toBeGreaterThan(
       pvOnly.annual.selfConsumptionKwh,
     );
   });

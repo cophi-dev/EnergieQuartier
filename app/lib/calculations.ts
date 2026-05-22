@@ -34,7 +34,8 @@ const HEAT_PUMP = {
 const BATTERY = {
   costPerKwh: 800,
   roundTrip: 0.7,
-  selfConsumptionBoost: 0.22, // +22 % Eigenverbrauch mit Speicher
+  selfConsumptionBoost: 0.22, // legacy – allocatePv modelliert Speicher explizit
+  cyclesPerYear: 0.55, // saisonale Vollzyklen (≈ 200 Tage/J.)
 } as const;
 
 const SOLAR_THERMAL = {
@@ -84,6 +85,87 @@ function sizeTechnologies(project: ProjectData): TechnologySizing {
   }
 
   return { pvKwp, batteryKwh, heatPumpKw, solarThermalM2 };
+}
+
+function totalElectricityDemandKwh(
+  project: ProjectData,
+  heatPumpElectricityKwh: number,
+): number {
+  return (
+    project.electricityKwh +
+    heatPumpElectricityKwh +
+    Math.round(project.livingArea * 2)
+  );
+}
+
+interface PvAllocation {
+  pvGenerationKwh: number;
+  directPvSelfUseKwh: number;
+  batteryChargeKwh: number;
+  batteryDischargeKwh: number;
+  pvSelfUseKwh: number;
+  gridExportKwh: number;
+}
+
+/**
+ * Verteilt PV-Ertrag auf Direktverbrauch, Speicher (statt Einspeisung) und Export.
+ * Überschuss mittags → Batterie (bis Kapazität/Zyklen), Rest → Einspeisung.
+ */
+function allocatePv(
+  project: ProjectData,
+  sizing: TechnologySizing,
+  totalElecDemand: number,
+): PvAllocation {
+  const pvGenerationKwh = sizing.pvKwp * PV.yieldKwhPerKwp;
+
+  let simultaneity = 0.36;
+  if (project.technologies.heatPumpAir || project.technologies.heatPumpGround) {
+    simultaneity += 0.05;
+  }
+  if (project.priorities.autarky > 50) simultaneity += 0.05;
+  if (project.technologies.battery && sizing.batteryKwh > 0) {
+    simultaneity += 0.03;
+  }
+
+  const directPvSelfUseKwh = Math.min(
+    totalElecDemand,
+    pvGenerationKwh * simultaneity,
+  );
+  const surplusPv = Math.max(0, pvGenerationKwh - directPvSelfUseKwh);
+
+  let batteryChargeKwh = 0;
+  let batteryDischargeKwh = 0;
+  if (
+    project.technologies.battery &&
+    sizing.batteryKwh > 0 &&
+    surplusPv > 0
+  ) {
+    const maxBatteryDischargeKwh =
+      sizing.batteryKwh * 365 * BATTERY.roundTrip * BATTERY.cyclesPerYear;
+    const remainingDemand = Math.max(0, totalElecDemand - directPvSelfUseKwh);
+    batteryDischargeKwh = Math.min(
+      surplusPv * 0.95,
+      maxBatteryDischargeKwh,
+      remainingDemand,
+    );
+    batteryChargeKwh = Math.min(surplusPv, batteryDischargeKwh / BATTERY.roundTrip);
+    batteryDischargeKwh = batteryChargeKwh * BATTERY.roundTrip;
+  }
+
+  const gridExportKwh = Math.max(0, surplusPv - batteryChargeKwh);
+  const pvSelfUseKwh = Math.min(
+    totalElecDemand,
+    directPvSelfUseKwh + batteryDischargeKwh,
+  );
+
+  return {
+    pvGenerationKwh,
+    directPvSelfUseKwh,
+    batteryChargeKwh,
+    batteryDischargeKwh,
+    pvSelfUseKwh,
+    gridExportKwh,
+  };
 }
 
 function interpolateCost(min: number, max: number, kw: number): number {
@@ -161,22 +243,7 @@ function calcAnnualBalance(
   project: ProjectData,
   sizing: TechnologySizing,
 ): CalculationResult["annual"] {
-  const { technologies, electricityKwh, heatKwh } = project;
-
-  const pvGenerationKwh = sizing.pvKwp * PV.yieldKwhPerKwp;
-  let selfConsumptionRate = 0.35;
-  if (technologies.battery && sizing.batteryKwh > 0) {
-    selfConsumptionRate += BATTERY.selfConsumptionBoost;
-    selfConsumptionRate *= 1 + (sizing.batteryKwh / 20) * 0.05;
-    selfConsumptionRate = Math.min(selfConsumptionRate, 0.75);
-  }
-  if (project.priorities.autarky > 50) selfConsumptionRate += 0.05;
-
-  const pvSelfUse = Math.min(
-    electricityKwh * 0.85,
-    pvGenerationKwh * selfConsumptionRate,
-  );
-  const gridExportKwh = Math.max(0, pvGenerationKwh - pvSelfUse);
+  const { technologies, heatKwh } = project;
 
   const jaz = technologies.heatPumpGround
     ? HEAT_PUMP.ground.jaz
@@ -188,31 +255,30 @@ function calcAnnualBalance(
       ? (heatPumpHeatKwh / jaz) * HEAT_PUMP.tempFactor
       : 0;
 
+  const totalElecDemand = totalElectricityDemandKwh(
+    project,
+    heatPumpElectricityKwh,
+  );
+  const pv = allocatePv(project, sizing, totalElecDemand);
+
   const solarThermalKwh =
     sizing.solarThermalM2 * SOLAR_THERMAL.kwhPerM2;
 
   const totalDemand =
-    electricityKwh + heatPumpElectricityKwh + heatKwh * 0.1;
-  const selfSupplied =
-    pvSelfUse +
-    solarThermalKwh +
-    (technologies.battery ? pvSelfUse * 0.15 * BATTERY.roundTrip : 0);
+    project.electricityKwh + heatPumpElectricityKwh + heatKwh * 0.1;
+  const selfSupplied = pv.pvSelfUseKwh + solarThermalKwh;
   const autarkyPercent = Math.min(
     95,
     Math.round((selfSupplied / totalDemand) * 100),
   );
 
-  const gridImportKwh =
-    electricityKwh -
-    pvSelfUse +
-    heatPumpElectricityKwh +
-    Math.max(0, heatKwh - heatPumpHeatKwh - solarThermalKwh) * 0.02;
+  const gridImportKwh = Math.max(0, totalElecDemand - pv.pvSelfUseKwh);
 
   return {
-    pvGenerationKwh: Math.round(pvGenerationKwh),
-    selfConsumptionKwh: Math.round(pvSelfUse),
-    gridExportKwh: Math.round(gridExportKwh),
-    gridImportKwh: Math.round(Math.max(0, gridImportKwh)),
+    pvGenerationKwh: Math.round(pv.pvGenerationKwh),
+    selfConsumptionKwh: Math.round(pv.pvSelfUseKwh),
+    gridExportKwh: Math.round(pv.gridExportKwh),
+    gridImportKwh: Math.round(gridImportKwh),
     heatPumpElectricityKwh: Math.round(heatPumpElectricityKwh),
     solarThermalKwh: Math.round(solarThermalKwh),
     autarkyPercent,
@@ -334,6 +400,7 @@ function buildSankey(
     { name: "Solarthermie" },
     { name: "Wärmebedarf" },
     { name: "Kühlung (Neben)" },
+    { name: "Haushalt" },
   ];
 
   const links: SankeyData["links"] = [];
@@ -341,40 +408,33 @@ function buildSankey(
     if (value > 50) links.push({ source, target, value: Math.round(value) });
   };
 
-  const gridToLoad = Math.max(
-    0,
-    project.electricityKwh - annual.selfConsumptionKwh,
-  );
-  const pvToLoad = annual.selfConsumptionKwh;
-  const pvToGrid = annual.gridExportKwh;
-  const batteryFlow =
-    project.technologies.battery && sizing.batteryKwh > 0
-      ? pvToLoad * 0.2
-      : 0;
+  const householdElec = project.electricityKwh;
+  const hpElec = annual.heatPumpElectricityKwh;
+  const cooling = Math.round(project.livingArea * 2);
+  const totalElecDemand = householdElec + hpElec + cooling;
+
+  const pv = allocatePv(project, sizing, totalElecDemand);
+  const gridToLoad = Math.max(0, totalElecDemand - pv.pvSelfUseKwh);
 
   add(0, 3, gridToLoad);
-  add(1, 3, pvToLoad - batteryFlow);
-  add(1, 4, pvToGrid);
-  if (batteryFlow > 0) {
-    add(1, 2, batteryFlow);
-    add(2, 3, batteryFlow * BATTERY.roundTrip);
+  add(1, 3, pv.directPvSelfUseKwh);
+  add(1, 4, pv.gridExportKwh);
+  if (pv.batteryChargeKwh > 0) {
+    add(1, 2, pv.batteryChargeKwh);
+    add(2, 3, pv.batteryDischargeKwh);
   }
 
-  const gasRemain = Math.max(
-    0,
-    project.heatKwh * 0.08,
-  );
+  add(3, 10, householdElec);
+  add(3, 6, hpElec);
+  add(3, 9, cooling);
+
+  const gasRemain = Math.max(0, project.heatKwh * 0.08);
   const hpHeat = project.heatKwh * 0.84;
   const stHeat = annual.solarThermalKwh;
 
   add(5, 8, gasRemain);
   add(6, 8, hpHeat);
   add(7, 8, stHeat);
-  add(0, 6, annual.heatPumpElectricityKwh);
-  add(3, 6, annual.heatPumpElectricityKwh * 0.1);
-
-  const cooling = project.livingArea * 2;
-  add(3, 9, cooling);
 
   return { nodes, links };
 }

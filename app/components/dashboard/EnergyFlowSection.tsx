@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { BarChart3, GitBranch } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EnergySankey } from "@/app/components/dashboard/EnergySankey";
+import { ConceptSizingStrip } from "@/app/components/dashboard/ConceptSizingStrip";
 import { MonthlyEnergyChart } from "@/app/components/dashboard/MonthlyEnergyChart";
 import { buildMonthlyEnergyFlows } from "@/app/lib/monthly-energy";
 import type { CalculationResult } from "@/app/types/calculation";
@@ -70,9 +71,10 @@ export function EnergyFlowSection({ project, result }: EnergyFlowSectionProps) {
             : "Wie verteilen sich Erzeugung und Verbrauch über das Jahr? Sommer-PV und Winter-Wärme im Blick."}
         </p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
+        <ConceptSizingStrip project={project} result={result} />
         {view === "annual" ? (
-          <EnergySankey data={result.sankey} />
+          <EnergySankey data={result.sankey} annual={result.annual} />
         ) : (
           <MonthlyEnergyChart data={monthly} />
         )}

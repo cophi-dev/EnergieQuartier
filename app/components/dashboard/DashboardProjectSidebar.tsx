@@ -5,6 +5,7 @@ import { ButtonLink } from "@/app/components/ui/ButtonLink";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { WIZARD_STEPS } from "@/app/lib/constants";
+import { buildConceptSizingItems } from "@/app/lib/concept-sizing";
 import type { ProjectData } from "@/app/types/project";
 import type { CalculationResult } from "@/app/types/calculation";
 
@@ -24,6 +25,8 @@ export function DashboardProjectSidebar({
     project.technologies.battery && "Speicher",
     project.technologies.solarThermal && "Solarthermie",
   ].filter(Boolean);
+
+  const sizingItems = buildConceptSizingItems(project, result);
 
   return (
     <aside className="glass hidden w-64 shrink-0 space-y-4 border-r border-[#0F172A]/8 p-4 xl:block">
@@ -68,14 +71,18 @@ export function DashboardProjectSidebar({
           <p className="text-sm font-medium text-[#0F172A] dark:text-white">
             {techLabels.join(" · ") || "—"}
           </p>
-          {result.sizing.pvKwp > 0 && (
-            <p className="mt-2 text-xs text-[#0F172A]/55">
-              {result.sizing.pvKwp} kWp ·{" "}
-              {result.sizing.batteryKwh > 0
-                ? `${result.sizing.batteryKwh} kWh Speicher`
-                : "ohne Speicher"}
-            </p>
-          )}
+          {sizingItems.length > 0 ? (
+            <ul className="mt-2 space-y-1.5">
+              {sizingItems.map((item) => (
+                <li key={item.id} className="text-xs text-[#0F172A]/70 dark:text-white/70">
+                  <span className="font-medium text-[#0F172A] dark:text-white">
+                    {item.value}
+                  </span>{" "}
+                  {item.label}
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </CardContent>
       </Card>
 
