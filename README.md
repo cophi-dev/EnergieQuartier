@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EnergieQuartier
 
-## Getting Started
+**Intelligente Konzepte für Hamburgs Energiezukunft**
 
-First, run the development server:
+MVP-Web-App zur schnellen Erstellung von Konzeptstudien für dezentrale Energieversorgungslösungen (PV, Wärmepumpe, Batterie, Solarthermie) – für den Vertrieb bei den Hamburger Energiewerken.
+
+## Tech Stack
+
+- Next.js 15 (App Router + TypeScript)
+- Tailwind CSS + shadcn/ui
+- Recharts · React Hook Form + Zod · Framer Motion · jsPDF
+- Zustand + localStorage (Projekte)
+
+## Entwicklung
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Öffnen: [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Demo-Flow
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Landing** → „Neues Projekt starten“ oder **„HEW-Demo laden“**
+2. **Wizard** (`/wizard`) → 5 Schritte → **Berechnen**
+3. **Dashboard** (`/dashboard`) → Sankey, KPIs, Charts, **PDF-Report**
+4. **Meine Projekte** (`/projekte`) → gespeicherte Studien (localStorage)
 
-## Learn More
+### HEW-Vorstellungsdemo
 
-To learn more about Next.js, take a look at the following resources:
+- Festes Showcase-Projekt: MFH Elbchaussee (`/dashboard?demo=hew`)
+- KPIs in Hero-Mockup und Dashboard-Banner stammen aus derselben Berechnung
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Speicherpilot
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+cp .env.example .env.local
+# NEXT_PUBLIC_SPEICHERPILOT_URL=https://ihre-app-url.de
+```
 
-## Deploy on Vercel
+### Tests
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm test
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Struktur
+
+```
+app/
+├── page.tsx              Landing Page
+├── wizard/               5-Schritte-Konfigurator
+├── dashboard/            Simulation & Report
+├── projekte/             Gespeicherte Projekte
+├── components/           Layout, Landing, Wizard, Dashboard
+├── lib/                  Konstanten, Berechnungen
+└── types/                TypeScript-Modelle
+
+components/ui/            shadcn/ui Komponenten
+lib/store.ts              Zustand-Store (localStorage)
+```
+
+## Markenfarben
+
+| Rolle      | Hex       |
+|------------|-----------|
+| Primär     | `#0A4D68` |
+| Sekundär   | `#088395` |
+| Akzent     | `#00FFCA` |
+| Hintergrund| `#F5F8FA` |
