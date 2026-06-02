@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppHeader } from "@/app/components/layout/AppHeader";
 import { AppFooter } from "@/app/components/layout/AppFooter";
 import { BRAND } from "@/app/lib/constants";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const inter = Inter({
@@ -38,6 +39,7 @@ export default function RootLayout({
           <main>{children}</main>
           <AppFooter />
         </TooltipProvider>
+        <Analytics />
       </body>
     </html>
   );
