@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppHeader } from "@/app/components/layout/AppHeader";
 import { AppFooter } from "@/app/components/layout/AppFooter";
@@ -38,6 +39,7 @@ export default function RootLayout({
           <main>{children}</main>
           <AppFooter />
         </TooltipProvider>
+        <Analytics />
       </body>
     </html>
   );
